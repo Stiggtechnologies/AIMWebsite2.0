@@ -46,11 +46,9 @@ export default function IntakePage() {
                 <ul className="space-y-3">
                   {[
                     'Personal contact information',
-                    'Insurance details (WCB claim number, MVA insurance info, or private insurance card)',
-                    'Emergency contact information',
-                    'Details about your injury or condition',
-                    'Current medications and medical history',
-                    'Previous treatments or healthcare providers',
+                    'Insurance details (WCB/MVA/private, if applicable)',
+                    'Emergency contact information (optional)',
+                    'Basic details about your injury or issue',
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3">
                       <FileText className="h-5 w-5 flex-none text-aim-teal mt-0.5" />
@@ -73,10 +71,13 @@ export default function IntakePage() {
 
                 <div className="mt-8 space-y-3">
                   <Button asChild size="lg" className="w-full bg-aim-cta-primary hover:bg-aim-cta-primary/90">
-                    <Link href="/ai-intake">Start Intake with AI Assistant</Link>
+                    <Link href="/intake/form">Start Quick Intake Form (2–3 min)</Link>
+                  </Button>
+                  <Button asChild size="lg" variant="outline" className="w-full border-aim-navy text-aim-navy hover:bg-white">
+                    <Link href="/ai-intake">Start Guided Intake (AI-assisted)</Link>
                   </Button>
                   <p className="text-sm text-center text-aim-slate/60">
-                    Our AI assistant can guide you through the intake process and answer questions as you go.
+                    Choose quick form if you want the fastest route. Choose guided intake if you prefer step-by-step help.
                   </p>
                 </div>
               </CardContent>

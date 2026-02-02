@@ -38,6 +38,8 @@ interface IntakeData {
     employer_name?: string;
     insurance_company?: string;
   };
+  // NOTE: We intentionally do not collect medical history via AI-assisted intake.
+  // Full intake (medical history, medications, etc.) should be collected via a secure form/workflow.
   medical_history: {
     current_medications?: string;
     previous_injuries?: string;
@@ -59,7 +61,6 @@ type IntakeStep =
   | 'injury_details'
   | 'insurance_type'
   | 'insurance_details'
-  | 'medical_history'
   | 'consent'
   | 'review'
   | 'booking_location'
@@ -68,13 +69,12 @@ type IntakeStep =
 
 const stepProgress: Record<IntakeStep, number> = {
   welcome: 0,
-  patient_name: 10,
-  patient_contact: 20,
-  injury_type: 35,
-  injury_details: 50,
-  insurance_type: 60,
-  insurance_details: 70,
-  medical_history: 80,
+  patient_name: 15,
+  patient_contact: 30,
+  injury_type: 45,
+  injury_details: 60,
+  insurance_type: 70,
+  insurance_details: 80,
   consent: 90,
   review: 92,
   booking_location: 95,
@@ -249,35 +249,30 @@ export function AIIntakeConversation() {
       case 'insurance_details':
         if (intakeData.insurance_data.insurance_type === 'wcb') {
           updateIntakeData('insurance_data', 'wcb_claim', userInput);
-          setCurrentStep('medical_history');
-          addMessage('assistant', 'Thank you. Now, are you currently taking any medications we should be aware of? (If none, type "none")');
         } else if (intakeData.insurance_data.insurance_type === 'mva') {
           updateIntakeData('insurance_data', 'mva_claim', userInput);
-          setCurrentStep('medical_history');
-          addMessage('assistant', 'Thank you. Now, are you currently taking any medications we should be aware of? (If none, type "none")');
         } else {
+          // For private/other cases, keep it simple in the AI-assisted flow.
+          // Full insurance details can be collected via secure intake form / AIMOS.
           if (normalizedInput.includes('yes')) {
-            addMessage('assistant', 'Great! What is the name of your insurance company?');
-            setCurrentStep('medical_history');
-          } else {
-            setCurrentStep('medical_history');
-            addMessage('assistant', 'That\'s fine. Now, are you currently taking any medications we should be aware of? (If none, type "none")');
+            updateIntakeData('insurance_data', 'insurance_company', 'pending');
           }
         }
-        await saveProgress();
-        break;
 
-      case 'medical_history':
-        updateIntakeData('medical_history', 'current_medications', userInput);
+        // Per policy: do NOT collect medications/medical history via AI-assisted intake.
         setCurrentStep('consent');
-        addMessage('assistant', 'Almost done! I need your consent for three things:\n\n1. Privacy: We will handle your information according to privacy regulations\n2. Treatment: You consent to receive physiotherapy treatment\n3. Communication: We can contact you with appointment reminders\n\nDo you consent to all of the above? (Type "yes" to consent)');
+        addMessage(
+          'assistant',
+          'Almost done! I need your consent for two things:\n\n1. Privacy: We will handle your information according to privacy regulations\n2. Communication: We can contact you with appointment reminders\n\nDo you consent to the above? (Type "yes" to consent)'
+        );
         await saveProgress();
         break;
 
       case 'consent':
         if (normalizedInput.includes('yes') || normalizedInput.includes('consent') || normalizedInput.includes('agree')) {
           updateIntakeData('consent_data', 'privacy_consent', true);
-          updateIntakeData('consent_data', 'treatment_consent', true);
+          // We do not collect treatment consent via AI-assisted intake.
+          updateIntakeData('consent_data', 'treatment_consent', false); // collected later in secure workflow
           updateIntakeData('consent_data', 'communication_consent', true);
           setCurrentStep('review');
 
