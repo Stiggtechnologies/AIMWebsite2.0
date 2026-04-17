@@ -97,8 +97,70 @@ export function Header() {
                   Manual Osteopathy
                 </Link>
               </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/services/sports-injury-rehabilitation" className="w-full cursor-pointer">
+                  Sports Injury Rehabilitation
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/services/concussion-rehabilitation" className="w-full cursor-pointer">
+                  Concussion Rehabilitation
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/services/vestibular-rehabilitation" className="w-full cursor-pointer">
+                  Vestibular Rehabilitation
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/services/pelvic-floor-physiotherapy" className="w-full cursor-pointer">
+                  Pelvic Floor Physiotherapy
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/services/post-surgical-rehabilitation" className="w-full cursor-pointer">
+                  Post-Surgical Rehabilitation
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/services/chronic-pain-rehabilitation" className="w-full cursor-pointer">
+                  Chronic Pain Rehabilitation
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/services/mva-rehabilitation" className="w-full cursor-pointer">
+                  MVA Rehabilitation
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/services/massage-therapy" className="w-full cursor-pointer">
+                  Massage Therapy
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/services/chiropractic-care" className="w-full cursor-pointer">
+                  Chiropractic Care
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/services/direct-billing" className="w-full cursor-pointer">
+                  Direct Billing
+                </Link>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <Link
+            href="/conditions"
+            className="text-sm font-medium leading-6 text-aim-slate hover:text-aim-teal transition-colors whitespace-nowrap"
+          >
+            Conditions
+          </Link>
+          <Link
+            href="/for-patients"
+            className="text-sm font-medium leading-6 text-aim-slate hover:text-aim-teal transition-colors whitespace-nowrap"
+          >
+            For Patients
+          </Link>
           <Link
             href="/programs"
             className="text-sm font-medium leading-6 text-aim-slate hover:text-aim-teal transition-colors whitespace-nowrap"
