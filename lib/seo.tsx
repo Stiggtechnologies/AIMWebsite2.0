@@ -45,7 +45,7 @@ export function medicalBusinessSchema() {
       'Rehabilitation',
     ],
     priceRange: '$$',
-    telephone: '+1-780-XXX-XXXX',
+    telephone: '+1-780-250-8188',
   };
 }
 
