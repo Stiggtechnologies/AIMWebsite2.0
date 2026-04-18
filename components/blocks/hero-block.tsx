@@ -34,7 +34,7 @@ export function HeroBlock({
             {eyebrow}
           </div>
         )}
-        <h1 className="max-w-4xl text-4xl font-semibold leading-[1.1] tracking-tight md:text-5xl lg:text-6xl">
+        <h1 className="max-w-4xl text-4xl font-semibold leading-[1.1] tracking-tight text-white md:text-5xl lg:text-6xl">
           {headline}
         </h1>
         {subheadline && (
