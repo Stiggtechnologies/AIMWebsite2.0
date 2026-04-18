@@ -21,7 +21,7 @@ export default function InsurersPage() {
             </p>
             <div className="mt-10">
               <Button asChild size="lg" className="bg-aim-cta-primary hover:bg-aim-cta-primary/90">
-                <Link href="tel:+17805550100">Contact Us</Link>
+                <Link href="tel:+17802508188">Contact Us</Link>
               </Button>
             </div>
           </div>
