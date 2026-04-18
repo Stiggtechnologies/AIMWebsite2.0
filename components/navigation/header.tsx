@@ -15,6 +15,7 @@ import { CENTRAL_PHONE_DISPLAY, CENTRAL_PHONE_TEL } from '@/lib/config';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-aim-divider-gray bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
@@ -256,67 +257,160 @@ export function Header() {
                   >
                     Get Care
                   </Link>
-                  <div className="-mx-3 px-3 py-2">
-                    <p className="text-sm font-semibold text-gray-500 mb-2">Services</p>
-                    <div className="space-y-1 pl-3">
-                      <Link
-                        href="/services/physiotherapy"
-                        className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        Physiotherapy
-                      </Link>
-                      <Link
-                        href="/services/wcb-rehabilitation"
-                        className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        WCB Rehabilitation
-                      </Link>
-                      <Link
-                        href="/services/work-hardening"
-                        className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        Work Hardening
-                      </Link>
-                      <Link
-                        href="/services/work-conditioning"
-                        className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        Work Conditioning
-                      </Link>
-                      <Link
-                        href="/services/functional-capacity-evaluations"
-                        className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        Functional Capacity Evaluations
-                      </Link>
-                      <Link
-                        href="/services/return-to-work"
-                        className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        Return to Work Programs
-                      </Link>
-                      <Link
-                        href="/services/performance-rehabilitation"
-                        className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        Performance Rehabilitation
-                      </Link>
-                      <Link
-                        href="/services/manual-osteopathy"
-                        className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        Manual Osteopathy
-                      </Link>
-                    </div>
+                  <div className="-mx-3">
+                    <button
+                      type="button"
+                      className="flex w-full items-center justify-between rounded-lg px-3 py-3 text-base font-semibold leading-6 text-gray-900 hover:bg-gray-50"
+                      onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                    >
+                      Services
+                      <ChevronDown className={`h-5 w-5 flex-none transition-transform duration-200 ${mobileServicesOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
+                    </button>
+                    {mobileServicesOpen && (
+                      <div className="space-y-1 pl-3 pb-2">
+                        <Link
+                          href="/services/physiotherapy"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Physiotherapy
+                        </Link>
+                        <Link
+                          href="/services/wcb-rehabilitation"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          WCB Rehabilitation
+                        </Link>
+                        <Link
+                          href="/services/work-hardening"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Work Hardening
+                        </Link>
+                        <Link
+                          href="/services/work-conditioning"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Work Conditioning
+                        </Link>
+                        <Link
+                          href="/services/functional-capacity-evaluations"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Functional Capacity Evaluations
+                        </Link>
+                        <Link
+                          href="/services/return-to-work"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Return to Work Programs
+                        </Link>
+                        <Link
+                          href="/services/performance-rehabilitation"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Performance Rehabilitation
+                        </Link>
+                        <Link
+                          href="/services/manual-osteopathy"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Manual Osteopathy
+                        </Link>
+                        <Link
+                          href="/services/sports-injury-rehabilitation"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Sports Injury Rehabilitation
+                        </Link>
+                        <Link
+                          href="/services/concussion-rehabilitation"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Concussion Rehabilitation
+                        </Link>
+                        <Link
+                          href="/services/vestibular-rehabilitation"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Vestibular Rehabilitation
+                        </Link>
+                        <Link
+                          href="/services/pelvic-floor-physiotherapy"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Pelvic Floor Physiotherapy
+                        </Link>
+                        <Link
+                          href="/services/post-surgical-rehabilitation"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Post-Surgical Rehabilitation
+                        </Link>
+                        <Link
+                          href="/services/chronic-pain-rehabilitation"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Chronic Pain Rehabilitation
+                        </Link>
+                        <Link
+                          href="/services/mva-rehabilitation"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          MVA Rehabilitation
+                        </Link>
+                        <Link
+                          href="/services/massage-therapy"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Massage Therapy
+                        </Link>
+                        <Link
+                          href="/services/chiropractic-care"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Chiropractic Care
+                        </Link>
+                        <Link
+                          href="/services/direct-billing"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Direct Billing
+                        </Link>
+                      </div>
+                    )}
                   </div>
+                  <Link
+                    href="/conditions"
+                    className="-mx-3 block rounded-lg px-3 py-3 text-base font-semibold leading-6 text-gray-900 hover:bg-gray-50"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Conditions
+                  </Link>
+                  <Link
+                    href="/for-patients"
+                    className="-mx-3 block rounded-lg px-3 py-3 text-base font-semibold leading-6 text-gray-900 hover:bg-gray-50"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    For Patients
+                  </Link>
                   <Link
                     href="/programs"
                     className="-mx-3 block rounded-lg px-3 py-3 text-base font-semibold leading-6 text-gray-900 hover:bg-gray-50"
