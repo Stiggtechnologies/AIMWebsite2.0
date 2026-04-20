@@ -1,5 +1,15 @@
 import { supabase } from './supabase';
 import { PersonaScores, BehavioralSignals } from './persona';
+import {
+  gtagPageview,
+  gtagCTAClick,
+  gtagScrollDepth,
+  gtagFormStart,
+  gtagFormSubmit,
+  gtagBookingConfirm,
+  gtagPhoneClick,
+  gtagEvent,
+} from './gtag';
 
 export type EventType =
   | 'page_view'
@@ -110,6 +120,9 @@ export class EventDispatcher {
   }
 
   async trackPageView(path: string, title?: string): Promise<void> {
+    // Forward to GA4
+    gtagPageview(path, title || document.title);
+
     await this.dispatch('page_view', {
       path,
       title: title || document.title,
@@ -122,6 +135,14 @@ export class EventDispatcher {
     ctaText: string,
     destination?: string
   ): Promise<void> {
+    // Forward to GA4
+    gtagCTAClick(ctaId, ctaText, destination);
+
+    // Track phone clicks as a separate GA4 conversion event
+    if (destination?.startsWith('tel:')) {
+      gtagPhoneClick(destination.replace('tel:', ''), ctaId);
+    }
+
     await this.dispatch('cta_click', {
       cta_id: ctaId,
       cta_text: ctaText,
@@ -130,6 +151,12 @@ export class EventDispatcher {
   }
 
   async trackScrollDepth(page: string, depth: number): Promise<void> {
+    // Forward to GA4 (only at 25%, 50%, 75%, 100% milestones to avoid noise)
+    const percentage = Math.round((depth / document.documentElement.scrollHeight) * 100);
+    if ([25, 50, 75, 100].includes(percentage)) {
+      gtagScrollDepth(page, percentage);
+    }
+
     await this.dispatch('scroll_depth', {
       page,
       depth,
@@ -150,6 +177,9 @@ export class EventDispatcher {
   }
 
   async trackFormStart(formId: string, formType: string): Promise<void> {
+    // Forward to GA4
+    gtagFormStart(formId, formType);
+
     await this.dispatch('form_start', {
       form_id: formId,
       form_type: formType,
@@ -161,6 +191,9 @@ export class EventDispatcher {
     formType: string,
     success: boolean
   ): Promise<void> {
+    // Forward to GA4 — this is a KEY conversion event
+    gtagFormSubmit(formId, formType, success);
+
     await this.dispatch('form_submit', {
       form_id: formId,
       form_type: formType,
@@ -173,6 +206,9 @@ export class EventDispatcher {
     appointmentType: string,
     location: string
   ): Promise<void> {
+    // Forward to GA4 — this is the HIGHEST-VALUE conversion event
+    gtagBookingConfirm(bookingId, appointmentType, location);
+
     await this.dispatch('booking_confirm', {
       booking_id: bookingId,
       appointment_type: appointmentType,
@@ -181,6 +217,12 @@ export class EventDispatcher {
   }
 
   async trackExitIntent(): Promise<void> {
+    // Forward to GA4
+    gtagEvent('exit_intent', {
+      event_category: 'engagement',
+      time_on_site: Math.round(performance.now() / 1000),
+    });
+
     await this.dispatch('exit_intent', {
       time_on_site: performance.now() / 1000,
     });
