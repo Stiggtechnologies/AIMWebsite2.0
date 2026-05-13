@@ -1,17 +1,27 @@
 /**
- * Google Analytics 4 (GA4) utility functions
+ * Google Analytics 4 (GA4) + Google Ads conversion tracking helpers.
  *
- * Measurement ID: G-PF1ZYXYL6X
+ * GA4 measurement ID is loaded unconditionally. Google Ads conversions
+ * only fire when both NEXT_PUBLIC_GOOGLE_ADS_ID and the corresponding
+ * per-event conversion label are set, so this module is safe to ship
+ * before the Ads account is configured.
  *
- * This module provides type-safe wrappers around the gtag() global.
- * The actual <script> tags are loaded in app/layout.tsx via next/script.
- *
- * Key conversion events are also forwarded from lib/events.ts so that
- * Google Ads can optimise campaigns based on real patient actions
- * (phone clicks, form submissions, booking confirmations).
+ * The actual gtag.js <script> tag and the gtag('config', ...) calls
+ * live in app/layout.tsx.
  */
 
 export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID || 'G-PF1ZYXYL6X';
+
+// Google Ads — leave blank in env until Google Ads conversion actions exist.
+// When blank, fireAdsConversion() is a no-op (GA4 events still fire normally).
+export const GOOGLE_ADS_ID = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID || '';
+export const GOOGLE_ADS_FORM_LABEL = process.env.NEXT_PUBLIC_GOOGLE_ADS_FORM_CONVERSION_LABEL || '';
+export const GOOGLE_ADS_PHONE_LABEL = process.env.NEXT_PUBLIC_GOOGLE_ADS_PHONE_CONVERSION_LABEL || '';
+export const GOOGLE_ADS_BOOKING_LABEL = process.env.NEXT_PUBLIC_GOOGLE_ADS_BOOKING_CONVERSION_LABEL || '';
+export const ADS_CURRENCY = process.env.NEXT_PUBLIC_ADS_CURRENCY || 'CAD';
+export const ADS_VALUE_PHONE = Number(process.env.NEXT_PUBLIC_ADS_VALUE_PHONE || '50');
+export const ADS_VALUE_FORM = Number(process.env.NEXT_PUBLIC_ADS_VALUE_FORM || '150');
+export const ADS_VALUE_BOOKING = Number(process.env.NEXT_PUBLIC_ADS_VALUE_BOOKING || '250');
 
 // ---------------------------------------------------------------------------
 // Type helpers
@@ -49,6 +59,23 @@ export function gtagEvent(
   gtag('event', action, params);
 }
 
+/**
+ * Fire a Google Ads conversion. No-op unless both the Ads ID and the
+ * per-event label are configured via NEXT_PUBLIC_GOOGLE_ADS_* env vars.
+ *
+ * `send_to` must be of the form `AW-XXXXXXXXXX/labelToken` for Ads to
+ * recognise it. Sending the GA4 measurement ID does NOT record an Ads
+ * conversion — that was the prior bug in this file.
+ */
+function fireAdsConversion(label: string, value: number): void {
+  if (!GOOGLE_ADS_ID || !label) return;
+  gtag('event', 'conversion', {
+    send_to: `${GOOGLE_ADS_ID}/${label}`,
+    value,
+    currency: ADS_CURRENCY,
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Conversion events — these map to Google Ads conversion actions
 // ---------------------------------------------------------------------------
@@ -60,12 +87,7 @@ export function gtagPhoneClick(phoneNumber: string, source?: string): void {
     event_label: phoneNumber,
     source: source || 'website',
   });
-  // Also fire as a Google Ads conversion (configure conversion ID in GTM or here)
-  gtagEvent('conversion', {
-    send_to: `${GA_MEASUREMENT_ID}`,
-    event_category: 'lead',
-    event_label: 'phone_click',
-  });
+  fireAdsConversion(GOOGLE_ADS_PHONE_LABEL, ADS_VALUE_PHONE);
 }
 
 /** Visitor started the intake / booking form */
@@ -86,11 +108,7 @@ export function gtagFormSubmit(formId: string, formType: string, success: boolea
     success: success.toString(),
   });
   if (success) {
-    gtagEvent('conversion', {
-      send_to: `${GA_MEASUREMENT_ID}`,
-      event_category: 'lead',
-      event_label: `form_${formType}`,
-    });
+    fireAdsConversion(GOOGLE_ADS_FORM_LABEL, ADS_VALUE_FORM);
   }
 }
 
@@ -106,11 +124,7 @@ export function gtagBookingConfirm(
     appointment_type: appointmentType,
     location,
   });
-  gtagEvent('conversion', {
-    send_to: `${GA_MEASUREMENT_ID}`,
-    event_category: 'lead',
-    event_label: `booking_${appointmentType}`,
-  });
+  fireAdsConversion(GOOGLE_ADS_BOOKING_LABEL, ADS_VALUE_BOOKING);
 }
 
 /** CTA button / link click */

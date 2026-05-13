@@ -7,7 +7,7 @@ import { Footer } from '@/components/navigation/footer';
 import { SkipToContent } from '@/components/layout/skip-to-content';
 import { Toaster } from '@/components/ui/toaster';
 import { ClientTrackingWrapper } from '@/components/providers/client-tracking-wrapper';
-import { GA_MEASUREMENT_ID } from '@/lib/gtag';
+import { GA_MEASUREMENT_ID, GOOGLE_ADS_ID } from '@/lib/gtag';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Google Analytics 4 (GA4) */}
+        {/* Google Analytics 4 + Google Ads (loaded via single gtag.js library) */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
           strategy="afterInteractive"
@@ -52,6 +52,7 @@ export default function RootLayout({
             gtag('config', '${GA_MEASUREMENT_ID}', {
               page_path: window.location.pathname,
             });
+            ${GOOGLE_ADS_ID ? `gtag('config', '${GOOGLE_ADS_ID}');` : ''}
           `}
         </Script>
       </head>
