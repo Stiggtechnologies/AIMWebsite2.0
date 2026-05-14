@@ -14,6 +14,7 @@ interface TrackingContextValue {
   trackAIMessage: (messageType: 'user' | 'assistant', content: string, intent?: string) => void;
   trackFormStart: (formId: string, formType: string) => void;
   trackFormSubmit: (formId: string, formType: string, success: boolean) => void;
+  trackBookingConfirmation: (bookingId: string, appointmentType: string, location: string) => void;
 }
 
 const TrackingContext = createContext<TrackingContextValue | null>(null);
@@ -104,6 +105,13 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     [eventDispatcher]
   );
 
+  const trackBookingConfirmation = useCallback(
+    (bookingId: string, appointmentType: string, location: string) => {
+      eventDispatcher.trackBookingConfirmation(bookingId, appointmentType, location);
+    },
+    [eventDispatcher]
+  );
+
   const value: TrackingContextValue = {
     sessionId,
     personaType,
@@ -114,6 +122,7 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     trackAIMessage,
     trackFormStart,
     trackFormSubmit,
+    trackBookingConfirmation,
   };
 
   return <TrackingContext.Provider value={value}>{children}</TrackingContext.Provider>;

@@ -8,6 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useTracking } from '@/components/providers/tracking-provider';
+import { bookableLocations } from '@/lib/content/locations';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -82,13 +83,17 @@ const stepProgress: Record<IntakeStep, number> = {
   complete: 100,
 };
 
-const LOCATIONS = [
-  { slug: 'edmonton-main-hub', name: 'Main Hub Clinic' },
-  { slug: 'edmonton-west', name: 'Performance West' },
-];
+const LOCATIONS = bookableLocations().map((l) => ({
+  slug: l.slug,
+  name: l.name.replace(/^AIM\s+/i, ''),
+}));
 
 export function AIIntakeConversation() {
-  const { sessionId } = useTracking();
+  const { sessionId, trackFormStart, trackFormSubmit, trackBookingConfirmation } = useTracking();
+
+  useEffect(() => {
+    trackFormStart('ai-intake', 'intake');
+  }, [trackFormStart]);
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
@@ -288,9 +293,11 @@ export function AIIntakeConversation() {
           setIsLoading(true);
           try {
             await saveProgress('submitted');
+            trackFormSubmit('ai-intake', 'intake', true);
             setCurrentStep('booking_location');
             addMessage('assistant', `✅ Your intake form has been submitted!\n\nNow, would you like to book your first appointment? We have the following locations:\n\n${LOCATIONS.map(loc => `• ${loc.name}`).join('\n')}\n\nWhich location would you prefer? (Type the location name or "skip" to skip booking)`);
           } catch (err) {
+            trackFormSubmit('ai-intake', 'intake', false);
             setError('Failed to submit intake. Please try again or call us at (780) 250-8188.');
             addMessage('assistant', 'I\'m sorry, there was an error submitting your intake. Please call us at (780) 250-8188 for assistance.');
           } finally {
@@ -350,6 +357,11 @@ export function AIIntakeConversation() {
 
             const bookingData = await bookingResponse.json();
             setBookingRef(bookingData.booking_ref);
+            trackBookingConfirmation(
+              bookingData.booking_ref || 'unknown',
+              intakeData.injury_data.injury_type || 'intake',
+              selectedLocation || 'unknown'
+            );
             setCurrentStep('complete');
             addMessage('assistant', `🎉 Your appointment has been booked!\n\nBooking Reference: ${bookingData.booking_ref}\nLocation: ${LOCATIONS.find(l => l.slug === selectedLocation)?.name}\n\nYou'll receive a confirmation call or text within 24 hours.\n\nThank you for choosing Alberta Injury Management!`);
           } catch (err) {

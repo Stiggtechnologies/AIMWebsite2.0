@@ -26,6 +26,35 @@ All required environment variables have been added to `.env`:
 - `EVENT_BATCH_SIZE` - Batch size (25)
 - `EVENT_TIMEOUT_MS` - Request timeout (5000)
 
+**Analytics — Google Analytics 4:**
+- `NEXT_PUBLIC_GA_ID` - GA4 measurement ID (default `G-PF1ZYXYL6X`)
+
+**Analytics — Google Ads conversion tracking:**
+Leave blank until the Ads account has conversion actions created. While
+blank, the Google Ads conversion fires are silent no-ops; GA4 continues
+to record events. Create three conversion actions in Google Ads
+(`AIM_Intake_Form_Submit`, `AIM_Phone_Click`, `AIM_Booking_Confirm`) and
+paste the Conversion ID + each Conversion Label below.
+
+- `NEXT_PUBLIC_GOOGLE_ADS_ID` - Conversion ID `AW-XXXXXXXXXX`
+- `NEXT_PUBLIC_GOOGLE_ADS_FORM_CONVERSION_LABEL` - label for intake form submit
+- `NEXT_PUBLIC_GOOGLE_ADS_PHONE_CONVERSION_LABEL` - label for phone-click conversion
+- `NEXT_PUBLIC_GOOGLE_ADS_BOOKING_CONVERSION_LABEL` - label for booking-confirm conversion
+- `NEXT_PUBLIC_ADS_CURRENCY` - currency code (default `CAD`)
+- `NEXT_PUBLIC_ADS_VALUE_PHONE` - default value for phone-click conversions (default `50`)
+- `NEXT_PUBLIC_ADS_VALUE_FORM` - default value for form-submit conversions (default `150`)
+- `NEXT_PUBLIC_ADS_VALUE_BOOKING` - default value for booking-confirm conversions (default `250`)
+
+**Intake notification webhook:**
+When set, `/api/intake/save` fires a fire-and-forget POST to this URL
+after every *submitted* intake (drafts do not notify). Point this at
+Zapier, Make, a Slack Incoming Webhook, or a custom relay so the clinic
+gets notified of new leads.
+
+- `INTAKE_NOTIFICATION_WEBHOOK_URL` - destination URL
+- `INTAKE_NOTIFICATION_WEBHOOK_SECRET` - optional, sent as `X-Webhook-Secret`
+- `INTAKE_NOTIFICATION_TIMEOUT_MS` - request timeout (default `5000`)
+
 **AIM OS Integration:**
 - `AIM_OS_API_BASE` - AIM OS API base URL
 - `AIM_OS_API_KEY` - AIM OS API key
@@ -121,7 +150,7 @@ In your Vercel project settings, add all environment variables from `.env`:
 ```bash
 # Core App
 NEXT_PUBLIC_APP_ENV=production
-NEXT_PUBLIC_SITE_URL=https://albertainjurymanagement.ca
+NEXT_PUBLIC_SITE_URL=https://aimphysiotherapy.ca
 
 # AI (Primary)
 OPENAI_API_KEY=<your_openai_key>
@@ -153,7 +182,7 @@ NEXT_PUBLIC_GA_ID=<your_ga_id>
 
 Configure the webhook URL in AIM OS to point to:
 ```
-https://albertainjurymanagement.ca/api/webhooks/aimos
+https://aimphysiotherapy.ca/api/webhooks/aimos
 ```
 
 ### Step 3: Deploy to Vercel

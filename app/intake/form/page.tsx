@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -10,15 +10,25 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { useTracking } from '@/components/providers/tracking-provider';
+import { bookableLocations } from '@/lib/content/locations';
+
+const BOOKABLE = bookableLocations();
+const LOCATION_SLUGS = BOOKABLE.map((l) => l.slug) as [string, ...string[]];
+const DEFAULT_LOCATION = LOCATION_SLUGS[0];
 
 const QuickIntakeSchema = z.object({
   full_name: z.string().min(3),
   phone: z.string().min(10),
   issue_type: z.enum(['work_injury', 'mva', 'sports', 'chronic_pain', 'other']),
-  location: z.enum(['edmonton-main-hub', 'edmonton-west']),
+  location: z.enum(LOCATION_SLUGS),
   consent_privacy: z.literal(true),
   consent_communication: z.literal(true),
 });
+
+function shortLocationLabel(name: string): string {
+  // "AIM Edmonton Main Hub" -> "Edmonton Main Hub"; falls back to the full name.
+  return name.replace(/^AIM\s+/i, '') || name;
+}
 
 function issueTypeToInsurance(issueType: z.infer<typeof QuickIntakeSchema>['issue_type']) {
   if (issueType === 'work_injury') return 'wcb';
@@ -27,18 +37,22 @@ function issueTypeToInsurance(issueType: z.infer<typeof QuickIntakeSchema>['issu
 }
 
 export default function QuickIntakeFormPage() {
-  const { sessionId } = useTracking();
+  const { sessionId, trackFormStart, trackFormSubmit } = useTracking();
 
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [issueType, setIssueType] = useState<z.infer<typeof QuickIntakeSchema>['issue_type']>('work_injury');
-  const [location, setLocation] = useState<z.infer<typeof QuickIntakeSchema>['location']>('edmonton-main-hub');
+  const [location, setLocation] = useState<string>(DEFAULT_LOCATION);
   const [consentPrivacy, setConsentPrivacy] = useState(true);
   const [consentCommunication, setConsentCommunication] = useState(true);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    trackFormStart('quick-intake', 'intake');
+  }, [trackFormStart]);
 
   const onSubmit = async () => {
     setError(null);
@@ -74,7 +88,12 @@ export default function QuickIntakeFormPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           session_id: sessionId,
-          patient_data: { first_name: firstName, last_name: lastName, phone },
+          patient_data: {
+            first_name: firstName,
+            last_name: lastName,
+            phone,
+            preferred_location: location,
+          },
           injury_data: { injury_type: issueType },
           insurance_data: { insurance_type: issueTypeToInsurance(issueType) },
           medical_history: {}, // intentionally not collected here
@@ -83,6 +102,7 @@ export default function QuickIntakeFormPage() {
             treatment_consent: false, // collected later in secure workflow
             communication_consent: true,
           },
+          preferred_location: location,
           status: 'submitted',
         }),
       });
@@ -91,8 +111,10 @@ export default function QuickIntakeFormPage() {
         throw new Error('Failed to submit intake');
       }
 
+      trackFormSubmit('quick-intake', 'intake', true);
       setSuccess(true);
     } catch (e) {
+      trackFormSubmit('quick-intake', 'intake', false);
       setError('Something went wrong submitting your intake. Please call (780) 250-8188.');
     } finally {
       setIsSubmitting(false);
@@ -185,10 +207,13 @@ export default function QuickIntakeFormPage() {
                 id="location"
                 className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 value={location}
-                onChange={(e) => setLocation(e.target.value as any)}
+                onChange={(e) => setLocation(e.target.value)}
               >
-                <option value="edmonton-main-hub">Main Hub Clinic</option>
-                <option value="edmonton-west">Performance West</option>
+                {BOOKABLE.map((loc) => (
+                  <option key={loc.slug} value={loc.slug}>
+                    {shortLocationLabel(loc.name)}
+                  </option>
+                ))}
               </select>
             </div>
 

@@ -3,7 +3,7 @@ import { services } from '@/lib/content/services';
 import { conditions } from '@/lib/content/conditions';
 import { locations } from '@/lib/content/locations';
 
-const BASE = 'https://albertainjurymanagement.ca';
+const BASE = 'https://aimphysiotherapy.ca';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes = [
@@ -30,6 +30,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/privacy',
     '/terms-of-use',
     '/accessibility',
+    '/aim-performance-south-common',
   ].map((p) => ({
     url: `${BASE}${p}`,
     lastModified: new Date(),

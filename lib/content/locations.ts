@@ -24,7 +24,7 @@ export const locations: Location[] = [
   {
     slug: 'south-common',
     name: 'AIM South Common',
-    status: 'coming-soon',
+    status: 'open',
     shortDescriptor: 'Modern physiotherapy and multidisciplinary rehabilitation serving South Edmonton and surrounding communities.',
     area: 'South Edmonton',
     streetAddress: '[Clinic Address]',
@@ -57,7 +57,7 @@ export const locations: Location[] = [
     ],
     parking: 'Free surface parking on site',
     accessibility: 'Wheelchair accessible, accessible washroom, ground-floor treatment rooms',
-    opening: 'April 30, 2026',
+    existing: true,
   },
   {
     slug: 'st-paul',
@@ -173,4 +173,14 @@ export function openLocations() {
 
 export function comingSoonLocations() {
   return locations.filter((l) => l.status === 'coming-soon');
+}
+
+/**
+ * Locations that should appear in intake / booking selectors.
+ * Today this matches openLocations(); kept as a separate helper so that
+ * intake-availability can diverge from public-page status (e.g. a clinic
+ * that is bookable while its public page still says "coming soon").
+ */
+export function bookableLocations() {
+  return locations.filter((l) => l.status === 'open');
 }
