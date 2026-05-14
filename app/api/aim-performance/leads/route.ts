@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createServerSupabaseClient } from '@/lib/supabase';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/rate-limiter';
+import { notifyAdminOnLead } from '@/lib/aim-performance-notifications';
 
 // =============================================================================
 // POST /api/aim-performance/leads
@@ -116,11 +117,29 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // TODO (next prompt: admin notification workflow):
-  //   - Email AIM admin (Resend already configured at RESEND_API_KEY)
-  //   - SMS if interests include paid-physio-assessment / claim-coverage /
-  //     employer-program (high-intent)
-  //   - Create HubSpot or GoHighLevel CRM task
+  // Fire-and-forget admin notifications. Each channel is env-gated and
+  // independently failure-safe — see lib/aim-performance-notifications.ts.
+  // We deliberately don't `await` so the patient-facing submit stays
+  // snappy regardless of provider latency, and we explicitly `catch` to
+  // satisfy lint rules / avoid unhandled-rejection warnings.
+  void notifyAdminOnLead({
+    id: data.id,
+    first_name: lead.first_name,
+    last_name: lead.last_name ?? null,
+    email: lead.email,
+    phone: lead.phone ?? null,
+    is_evolve_member: lead.is_evolve_member ?? null,
+    interests: lead.interests,
+    preferred_contact_method: lead.preferred_contact_method ?? null,
+    message: lead.message ?? null,
+    utm_source: lead.utm_source ?? null,
+    utm_medium: lead.utm_medium ?? null,
+    utm_campaign: lead.utm_campaign ?? null,
+    utm_content: lead.utm_content ?? null,
+    utm_term: lead.utm_term ?? null,
+  }).catch((err) => {
+    console.error('notifyAdminOnLead threw unexpectedly:', err);
+  });
 
   return NextResponse.json(
     { success: true, id: data.id },
