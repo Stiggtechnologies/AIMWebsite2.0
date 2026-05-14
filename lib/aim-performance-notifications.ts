@@ -79,12 +79,22 @@ async function sendAdminEmail(
   isHighIntent: boolean
 ): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.AIM_PERFORMANCE_ADMIN_EMAIL;
+  const toRaw = process.env.AIM_PERFORMANCE_ADMIN_EMAIL;
   const from =
     process.env.AIM_PERFORMANCE_NOTIFICATION_FROM ||
     'AIM Performance <noreply@aimphysiotherapy.ca>';
 
-  if (!apiKey || !to) return; // not configured — silent no-op
+  if (!apiKey || !toRaw) return; // not configured — silent no-op
+
+  // `AIM_PERFORMANCE_ADMIN_EMAIL` accepts a comma-separated list so leads
+  // can fan out to multiple admin inboxes (e.g. an albertainjurymanagement.ca
+  // address and an aimphysiotherapy.ca address for redundancy). Resend's
+  // `to` field accepts an array directly.
+  const recipients = toRaw
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (recipients.length === 0) return;
 
   const fullName = [lead.first_name, lead.last_name].filter(Boolean).join(' ');
   const subject = `${isHighIntent ? '🔥 ' : ''}New AIM Performance lead — ${fullName}`;
@@ -97,7 +107,7 @@ async function sendAdminEmail(
     },
     body: JSON.stringify({
       from,
-      to: [to],
+      to: recipients,
       subject,
       html: buildEmailHtml(lead, isHighIntent),
     }),
