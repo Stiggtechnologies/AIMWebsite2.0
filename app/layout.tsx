@@ -2,8 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
-import { Header } from '@/components/navigation/header';
-import { Footer } from '@/components/navigation/footer';
+import { SiteHeader, SiteFooter } from '@/components/navigation/site-chrome';
 import { SkipToContent } from '@/components/layout/skip-to-content';
 import { Toaster } from '@/components/ui/toaster';
 import { ClientTrackingWrapper } from '@/components/providers/client-tracking-wrapper';
@@ -59,11 +58,11 @@ export default function RootLayout({
       <body className={inter.className}>
         <ClientTrackingWrapper>
           <SkipToContent />
-          <Header />
+          <SiteHeader />
           <main id="main-content" className="min-h-screen">
             {children}
           </main>
-          <Footer />
+          <SiteFooter />
           <Toaster />
         </ClientTrackingWrapper>
       </body>
