@@ -57,6 +57,8 @@ interface Errors {
   consent?: string;
 }
 
+const PHONE_FALLBACK = '(780) 250-8188';
+
 const inputBase =
   'w-full rounded-lg border border-aim-divider-gray bg-white px-4 py-3 text-sm text-aim-navy placeholder:text-aim-slate/50 focus:border-aim-teal focus:outline-none focus:ring-2 focus:ring-aim-teal/30';
 
@@ -74,6 +76,7 @@ export function LeadForm() {
   const [consent, setConsent] = useState(false);
   const [utm, setUtm] = useState<Utm>({});
   const [errors, setErrors] = useState<Errors>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -117,6 +120,8 @@ export function LeadForm() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setSubmitError(null);
+
     const nextErrors = validate();
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
@@ -153,47 +158,70 @@ export function LeadForm() {
       utm_campaign: utm.utm_campaign ?? null,
       utm_content: utm.utm_content ?? null,
       utm_term: utm.utm_term ?? null,
-      submitted_at: new Date().toISOString(),
     };
 
-    // --- Conversion event fan-out (frontend stubs) ---------------------------
-    // Always fire the primary lead-capture event.
-    // TODO: replace these console logs with real GA4 / Meta Pixel / Google Ads
-    // conversion calls once Ads + Pixel conversion actions exist:
-    //   - GA4:        gtag('event', 'aim_founder_access_submit', { ... })
-    //   - Google Ads: gtag('event', 'conversion', { send_to: 'AW-XXX/label' })
-    //   - Meta Pixel: fbq('trackCustom', 'AIMFounderAccessSubmit', { ... })
-    //
-    // Per-interest events let us tune campaign optimization for higher-intent
-    // selections (paid assessment, WCB, employer program) separately.
-    console.info('[aim_founder_access_submit]', payload);
-    INTEREST_OPTIONS.forEach((opt) => {
-      if (!opt.conversionEvent) return;
-      if (interests.has(opt.value)) {
-        console.info(`[${opt.conversionEvent}]`, { interest: opt.value });
+    try {
+      const response = await fetch('/api/aim-performance/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        if (response.status === 400) {
+          // Map server-side field errors back to inline form errors.
+          const data = (await response.json().catch(() => null)) as
+            | { details?: Record<string, string[] | undefined> }
+            | null;
+          const d = data?.details;
+          const mapped: Errors = {};
+          if (d?.first_name?.[0]) mapped.firstName = d.first_name[0];
+          if (d?.email?.[0]) mapped.email = d.email[0];
+          if (d?.interests?.[0]) mapped.interests = d.interests[0];
+          if (d?.consent_given?.[0]) mapped.consent = d.consent_given[0];
+          if (Object.keys(mapped).length > 0) {
+            setErrors(mapped);
+          } else {
+            setSubmitError(
+              `We couldn't process your submission. Please call ${PHONE_FALLBACK} for assistance.`
+            );
+          }
+        } else if (response.status === 429) {
+          setSubmitError('Too many submissions from this network — please try again in a moment.');
+        } else {
+          setSubmitError(
+            `Something went wrong on our end. Please try again or call ${PHONE_FALLBACK}.`
+          );
+        }
+        return;
       }
-    });
 
-    // --- Persistence (frontend stubs) ----------------------------------------
-    // TODO: POST `payload` to a server route handler that:
-    //   1. Inserts into Supabase table `aim_performance_leads` (see migration
-    //      planned in the optional Supabase prompt).
-    //   2. Creates a CRM task in HubSpot or GoHighLevel.
-    //   3. Sends an admin notification email to AIM ops.
-    //   4. Sends an SMS notification when `interests` includes
-    //      'paid-physio-assessment', 'claim-coverage', or 'employer-program'.
-    //   5. Attributes the lead with source = "AIM Performance South Common Launch".
-    // Service-role keys MUST stay server-side; never expose them here.
+      // Successful insert. Fire conversion events on success only.
+      // TODO: swap these console logs for real GA4 / Meta Pixel / Google Ads
+      // calls once Ads conversion actions and Pixel are configured.
+      //   - GA4:        gtag('event', 'aim_founder_access_submit', { ... })
+      //   - Google Ads: gtag('event', 'conversion', { send_to: 'AW-XXX/label' })
+      //   - Meta Pixel: fbq('trackCustom', 'AIMFounderAccessSubmit', { ... })
+      console.info('[aim_founder_access_submit]', { interests: selectedInterests });
+      INTEREST_OPTIONS.forEach((opt) => {
+        if (!opt.conversionEvent) return;
+        if (interests.has(opt.value)) {
+          console.info(`[${opt.conversionEvent}]`, { interest: opt.value });
+        }
+      });
 
-    // Simulate the async submit so the loading state is visible.
-    await new Promise((resolve) => setTimeout(resolve, 600));
-
-    setIsSubmitting(false);
-    setSuccess(true);
-
-    // TODO: optionally redirect to /aim-performance-south-common/thank-you
-    //       so Google Ads / Meta / GA4 can fire a clean conversion on the
-    //       thank-you URL. Disabled until the route exists.
+      setSuccess(true);
+      // TODO: optionally redirect to /aim-performance-south-common/thank-you
+      //       once that route exists, so GA4 / Meta / Google Ads can fire a
+      //       conversion against a dedicated URL.
+    } catch (err) {
+      console.error('Lead submit failed:', err);
+      setSubmitError(
+        `We couldn't reach our servers. Please check your connection or call ${PHONE_FALLBACK}.`
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const interestErrorId = errors.interests ? 'interests-error' : undefined;
@@ -234,6 +262,16 @@ export function LeadForm() {
       className="rounded-2xl border border-aim-divider-gray/60 bg-white p-6 shadow-xl sm:p-10"
       aria-labelledby="lead-form-heading"
     >
+      {submitError && (
+        <div
+          role="alert"
+          className="mb-6 flex items-start gap-3 rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-900"
+        >
+          <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" aria-hidden="true" />
+          <span>{submitError}</span>
+        </div>
+      )}
+
       {Object.keys(errors).length > 0 && (
         <div
           role="alert"
