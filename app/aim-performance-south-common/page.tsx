@@ -55,7 +55,7 @@ import { LeadForm } from './lead-form';
 // form to it after a successful submit once it exists.
 // =============================================================================
 
-const SITE_URL = 'https://albertainjurymanagement.ca';
+const SITE_URL = 'https://aimphysiotherapy.ca';
 const PAGE_PATH = '/aim-performance-south-common';
 const PAGE_URL = `${SITE_URL}${PAGE_PATH}`;
 
@@ -1412,7 +1412,7 @@ export default function AIMPerformanceSouthCommonPage() {
             </p>
             <p>
               <Link href="/" className="hover:text-aim-teal">
-                albertainjurymanagement.ca
+                aimphysiotherapy.ca
               </Link>
             </p>
           </div>

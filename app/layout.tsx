@@ -11,14 +11,14 @@ import { GA_MEASUREMENT_ID, GOOGLE_ADS_ID } from '@/lib/gtag';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://albertainjurymanagement.ca'),
+  metadataBase: new URL('https://aimphysiotherapy.ca'),
   title: 'Alberta Injury Management | Expert Physiotherapy & Rehabilitation in Edmonton',
   description: 'AIM provides outcome-based physiotherapy, WCB rehabilitation, MVA recovery, and return-to-work programs across Alberta. Expert injury management for lasting results.',
   keywords: 'physiotherapy Edmonton, WCB rehabilitation Alberta, MVA recovery, injury management, return to work programs, workplace injury prevention',
   openGraph: {
     type: 'website',
     locale: 'en_CA',
-    url: 'https://albertainjurymanagement.ca',
+    url: 'https://aimphysiotherapy.ca',
     siteName: 'Alberta Injury Management',
     title: 'Alberta Injury Management | Expert Physiotherapy & Rehabilitation',
     description: 'Outcome-based physiotherapy and injury management for Alberta. Expert care for work injuries, MVA recovery, and athletic performance.',

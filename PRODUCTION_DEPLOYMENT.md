@@ -150,7 +150,7 @@ In your Vercel project settings, add all environment variables from `.env`:
 ```bash
 # Core App
 NEXT_PUBLIC_APP_ENV=production
-NEXT_PUBLIC_SITE_URL=https://albertainjurymanagement.ca
+NEXT_PUBLIC_SITE_URL=https://aimphysiotherapy.ca
 
 # AI (Primary)
 OPENAI_API_KEY=<your_openai_key>
@@ -182,7 +182,7 @@ NEXT_PUBLIC_GA_ID=<your_ga_id>
 
 Configure the webhook URL in AIM OS to point to:
 ```
-https://albertainjurymanagement.ca/api/webhooks/aimos
+https://aimphysiotherapy.ca/api/webhooks/aimos
 ```
 
 ### Step 3: Deploy to Vercel

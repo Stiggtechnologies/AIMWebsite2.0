@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-const SITE_URL = 'https://albertainjurymanagement.ca';
+const SITE_URL = 'https://aimphysiotherapy.ca';
 const SITE_NAME = 'Alberta Injury Management';
 
 export function buildMetadata(opts: {
