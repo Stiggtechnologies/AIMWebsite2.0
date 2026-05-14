@@ -28,32 +28,17 @@ import {
 import { JsonLd } from '@/lib/seo';
 import { LeadForm } from './lead-form';
 
-// =============================================================================
 // AIM Performance South Common — premium launch landing page.
 //
-// Path:   /aim-performance-south-common
-// Audience: Active adults, gym members, athletes, professionals, entrepreneurs,
-//           and people recovering from pain or injury.
-// Primary goal: Capture Founder Access leads and paid physiotherapy assessment
-//               interest for the new AIM Performance South Common clinic
-//               (located inside Evolve Strength South Common).
+// Compliance: reviewed against College of Physiotherapists of Alberta
+// advertising expectations. Do not introduce "free", "discount", "save",
+// "deal", "promo", "guaranteed results", "specialist" (no formal
+// authorization), invented testimonials, or outcome claims.
 //
-// Compliance: This page is reviewed against College of Physiotherapists of
-// Alberta advertising expectations. Do not introduce: "free assessment",
-// "free consultation", "free screening", "free trial treatment", "discount",
-// "save", "deal", "promo", "guaranteed results", "specialist" (without
-// formal authorization), invented testimonials, or before/after outcome
-// claims tied to physiotherapy services.
-//
-// TODO: Create the branded OG image at /images/aim-performance-south-common-og.jpg.
-// It should show the AIM Performance South Common identity, the Evolve Strength
-// context, and the tagline "Move Better. Recover Stronger. Stay Active."
-//
-// TODO: When ready, build the thank-you page at
-//   app/aim-performance-south-common/thank-you/page.tsx
-// for clean Google Ads / Meta / GA4 conversion tracking. Redirect the lead
-// form to it after a successful submit once it exists.
-// =============================================================================
+// TODOs (separate work):
+//   - /images/aim-performance-south-common-og.jpg (branded OG image)
+//   - app/aim-performance-south-common/thank-you/page.tsx (clean
+//     conversion landing URL for Google Ads / Meta / GA4)
 
 const SITE_URL = 'https://aimphysiotherapy.ca';
 const PAGE_PATH = '/aim-performance-south-common';
@@ -328,6 +313,7 @@ const localBusinessJsonLd = {
     'Physiotherapy-led recovery, movement, and performance care inside Evolve Strength South Common in Edmonton, Alberta.',
   telephone: CONTACT.phoneDisplay,
   email: CONTACT.email,
+  priceRange: '$$',
   parentOrganization: {
     '@type': 'MedicalBusiness',
     name: 'Alberta Injury Management',
@@ -346,6 +332,40 @@ const localBusinessJsonLd = {
   sameAs: [
     // TODO: '[INSERT_SOCIAL_LINKS]' — Instagram, Facebook, LinkedIn, etc.
   ],
+};
+
+// Opening Week event. Dates are placeholders until confirmed; the schema
+// still validates without them, and the page makes the "Coming soon"
+// status explicit.
+const openingWeekJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Event',
+  name: 'AIM Performance South Common Opening Week',
+  description:
+    'Opening week at AIM Performance South Common: general education sessions, team introductions, recovery resources, and Founder Access information. Educational and informational only; does not include physiotherapy assessment, diagnosis, or treatment.',
+  eventStatus: 'https://schema.org/EventScheduled',
+  eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+  // TODO: replace with real start/end dates once opening week is scheduled.
+  startDate: '[INSERT_OPENING_WEEK_START]',
+  endDate: '[INSERT_OPENING_WEEK_END]',
+  location: {
+    '@type': 'Place',
+    name: 'AIM Performance South Common (inside Evolve Strength South Common)',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: CONTACT.fullAddress,
+      addressLocality: 'Edmonton',
+      addressRegion: 'AB',
+      addressCountry: 'CA',
+    },
+  },
+  organizer: {
+    '@type': 'Organization',
+    name: 'Alberta Injury Management',
+    url: SITE_URL,
+  },
+  url: `${PAGE_URL}#opening-week`,
+  isAccessibleForFree: true,
 };
 
 const medicalBusinessJsonLd = {
@@ -381,6 +401,7 @@ export default function AIMPerformanceSouthCommonPage() {
     <>
       <JsonLd data={localBusinessJsonLd} />
       <JsonLd data={medicalBusinessJsonLd} />
+      <JsonLd data={openingWeekJsonLd} />
       <JsonLd data={faqJsonLd} />
 
       {/* ====================================================================
@@ -444,6 +465,24 @@ export default function AIMPerformanceSouthCommonPage() {
             </a>
           </div>
         </nav>
+        {/* Mobile sub-nav: horizontal scrollable section chips, hidden on lg+ */}
+        <div className="border-t border-white/5 lg:hidden">
+          <ul
+            aria-label="Page sections"
+            className="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-2 [scrollbar-width:none] sm:px-6 [&::-webkit-scrollbar]:hidden"
+          >
+            {PAGE_NAV_LINKS.map((link) => (
+              <li key={link.href} className="flex-shrink-0">
+                <a
+                  href={link.href}
+                  className="inline-flex items-center rounded-full border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-white/85 transition hover:border-aim-teal hover:text-aim-teal"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </header>
 
       {/* ====================================================================

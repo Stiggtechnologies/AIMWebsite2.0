@@ -119,7 +119,20 @@ export function LeadForm() {
     e.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+    if (Object.keys(nextErrors).length > 0) {
+      // Focus the first invalid field for keyboard / screen-reader users.
+      const firstFieldId =
+        (nextErrors.firstName && 'firstName') ||
+        (nextErrors.email && 'email') ||
+        (nextErrors.interests && 'interests-error') ||
+        (nextErrors.consent && 'consent-error') ||
+        null;
+      if (firstFieldId && typeof document !== 'undefined') {
+        const el = document.getElementById(firstFieldId) as HTMLElement | null;
+        if (el && typeof el.focus === 'function') el.focus();
+      }
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -221,6 +234,52 @@ export function LeadForm() {
       className="rounded-2xl border border-aim-divider-gray/60 bg-white p-6 shadow-xl sm:p-10"
       aria-labelledby="lead-form-heading"
     >
+      {Object.keys(errors).length > 0 && (
+        <div
+          role="alert"
+          aria-labelledby="form-error-summary-heading"
+          className="mb-6 rounded-xl border border-red-300 bg-red-50 p-4"
+        >
+          <h3
+            id="form-error-summary-heading"
+            className="flex items-center gap-2 text-sm font-semibold text-red-900"
+          >
+            <AlertCircle className="h-4 w-4" aria-hidden="true" />
+            Please fix the following before submitting:
+          </h3>
+          <ul className="mt-2 list-disc space-y-1 pl-9 text-sm text-red-800">
+            {errors.firstName && (
+              <li>
+                <a href="#firstName" className="underline hover:no-underline">
+                  {errors.firstName}
+                </a>
+              </li>
+            )}
+            {errors.email && (
+              <li>
+                <a href="#email" className="underline hover:no-underline">
+                  {errors.email}
+                </a>
+              </li>
+            )}
+            {errors.interests && (
+              <li>
+                <a href="#interests-error" className="underline hover:no-underline">
+                  {errors.interests}
+                </a>
+              </li>
+            )}
+            {errors.consent && (
+              <li>
+                <a href="#consent-error" className="underline hover:no-underline">
+                  {errors.consent}
+                </a>
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="firstName" className={labelBase}>
@@ -443,12 +502,10 @@ export function LeadForm() {
         )}
       </button>
 
-      {Object.keys(errors).length > 0 && (
-        <p className="mt-4 flex items-center gap-2 text-sm text-red-700" role="alert">
-          <AlertCircle className="h-4 w-4" aria-hidden="true" />
-          Please fix the highlighted fields above.
-        </p>
-      )}
+      <p className="mt-4 text-sm leading-relaxed text-aim-slate">
+        After you submit, the AIM Performance team will follow up by your preferred contact method
+        within one business day to share next steps.
+      </p>
 
       <p className="mt-6 text-xs leading-relaxed text-aim-slate/70">
         By submitting this form, you consent to Alberta Injury Management / AIM Performance contacting
