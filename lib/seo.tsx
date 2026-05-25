@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import type { BlogPost } from '@/lib/content/blog';
 
 const SITE_URL = 'https://aimphysiotherapy.ca';
 const SITE_NAME = 'Alberta Injury Management';
@@ -91,6 +92,20 @@ export function faqSchema(faqs: { q: string; a: string }[]) {
       name: f.q,
       acceptedAnswer: { '@type': 'Answer', text: f.a },
     })),
+  };
+}
+
+export function blogPostingSchema(post: BlogPost) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.description,
+    datePublished: post.publishedAt,
+    dateModified: post.lastUpdated,
+    author: { '@type': 'Organization', name: post.author },
+    publisher: { '@type': 'Organization', name: 'AIM Physiotherapy' },
+    mainEntityOfPage: `${SITE_URL}/resources/${post.slug}`,
   };
 }
 
