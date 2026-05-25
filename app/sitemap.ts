@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next';
 import { services } from '@/lib/content/services';
 import { conditions } from '@/lib/content/conditions';
 import { locations } from '@/lib/content/locations';
+import { blogPosts } from '@/lib/content/blog';
 
 const BASE = 'https://aimphysiotherapy.ca';
 
@@ -59,5 +60,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
-  return [...staticRoutes, ...serviceRoutes, ...conditionRoutes, ...locationRoutes];
+  const resourceRoutes = blogPosts.map((p) => ({
+    url: `${BASE}/resources/${p.slug}`,
+    lastModified: new Date(p.lastUpdated),
+    changeFrequency: 'monthly' as const,
+    priority: 0.6,
+  }));
+
+  return [...staticRoutes, ...serviceRoutes, ...conditionRoutes, ...locationRoutes, ...resourceRoutes];
 }
