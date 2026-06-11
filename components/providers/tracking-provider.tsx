@@ -112,6 +112,27 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
     [eventDispatcher]
   );
 
+  // ── Global tel: link interceptor ──────────────────────────────────
+  // Catches clicks on ALL phone links site-wide so every tel: link
+  // fires a Google Ads phone-click conversion, even if the component
+  // didn't explicitly use <TrackedLink> or call trackCTAClick.
+  useEffect(() => {
+    function handleGlobalClick(e: MouseEvent) {
+      const anchor = (e.target as HTMLElement).closest?.('a[href^="tel:"]') as HTMLAnchorElement | null;
+      if (!anchor) return;
+
+      const phoneNumber = anchor.href.replace('tel:', '');
+      const ctaText = anchor.textContent?.trim() || 'Phone CTA';
+      const ctaId = `global-phone-${phoneNumber}`;
+
+      // Fire tracking through the EventDispatcher (GA4 + Ads conversion)
+      eventDispatcher.trackCTAClick(ctaId, ctaText, anchor.href);
+    }
+
+    document.addEventListener('click', handleGlobalClick, true);
+    return () => document.removeEventListener('click', handleGlobalClick, true);
+  }, [eventDispatcher]);
+
   const value: TrackingContextValue = {
     sessionId,
     personaType,
