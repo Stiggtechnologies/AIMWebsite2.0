@@ -7,7 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "verify:resources": "node scripts/verify-resources.mjs",
+    "verify:resources:visual": "node scripts/verify-resources.mjs --snapshot",
+    "ship:resources": "node scripts/ship-resources-batch.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
