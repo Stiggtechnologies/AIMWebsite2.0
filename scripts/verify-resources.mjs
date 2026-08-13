@@ -19,7 +19,9 @@ const REPO_ROOT = resolve(__dirname, '..');
 const { values } = parseArgs({
   options: {
     'base-url':      { type: 'string', default: 'https://aimphysiotherapy.ca' },
+    'canonical-url': { type: 'string', default: '' },  // defaults to base-url; override when testing localhost
     'blog-file':     { type: 'string', default: 'lib/content/blog.ts' },
+    'webinars-file': { type: 'string', default: 'lib/content/webinars.ts' },
     'snapshot':      { type: 'boolean', default: false },
     'snapshot-dir':  { type: 'string', default: 'verify-artifacts' },
     'wait-for-sha':  { type: 'string' },
@@ -35,8 +37,12 @@ if (values.help) {
   console.log(`Usage: node scripts/verify-resources.mjs [options]
 
 Options:
-  --base-url=<url>          Site to verify (default: https://aimphysiotherapy.ca)
+  --base-url=<url>          Site to verify against (default: https://aimphysiotherapy.ca)
+  --canonical-url=<url>     Canonical/sitemap origin (default: same as --base-url).
+                            Override when testing a localhost or preview build that
+                            still emits the production canonical URL.
   --blog-file=<path>        Path to blog data module (default: lib/content/blog.ts)
+  --webinars-file=<path>    Path to webinars data module (default: lib/content/webinars.ts)
   --snapshot                Also capture Playwright screenshots (chromium)
   --snapshot-dir=<dir>      Where to save screenshots (default: verify-artifacts)
   --wait-for-sha=<sha>      Poll GitHub deployments until <sha> is Production, then verify
@@ -52,6 +58,7 @@ Exit codes: 0 all pass · 1 any check failed · 2 config or fetch error
 }
 
 const BASE = values['base-url'].replace(/\/$/, '');
+const CANONICAL = (values['canonical-url'] || values['base-url']).replace(/\/$/, '');
 const CONCURRENCY = Math.max(1, parseInt(values.concurrency, 10));
 
 // ── helpers ────────────────────────────────────────────────────────────────
@@ -128,6 +135,25 @@ async function loadExpectedPosts(blogFile) {
   return posts;
 }
 
+// Webinars use single-quoted string literals (TS convention in this file), so parse those.
+// Each post-level webinar is indented 4 spaces and lists slug, status, title in that order.
+async function loadExpectedWebinars(webinarsFile) {
+  const src = await readFile(resolve(REPO_ROOT, webinarsFile), 'utf8');
+  const re =
+    /\n {4}slug:\s*'([^']+)',\s*\n {4}status:\s*'([^']+)',\s*\n {4}title:\s*'((?:[^'\\]|\\.)*)'/g;
+  const webinars = [];
+  let m;
+  while ((m = re.exec(src)) !== null) {
+    webinars.push({
+      slug: m[1],
+      status: m[2],
+      title: m[3].replace(/\\'/g, "'").replace(/\\\\/g, '\\'),
+    });
+  }
+  // Note: this file may be intentionally empty pre-launch; return [] rather than throw.
+  return webinars;
+}
+
 // ── wait for GitHub production deployment ─────────────────────────────────
 
 async function waitForProdDeploy(sha, repo, timeoutSec) {
@@ -177,14 +203,25 @@ async function runSmokeChecks(posts) {
   const beforeSm = failures.length;
   const sm = await fetchText(`${BASE}/sitemap.xml`);
   let inSitemapSize = 0;
+  const webinarSitemapSlugs = new Set();
   if (sm.status !== 200) failures.push(`/sitemap.xml → HTTP ${sm.status}`);
   else {
-    const inSitemap = new Set(
-      [...sm.body.matchAll(/<loc>[^<]*\/resources\/([a-z0-9-]+)<\/loc>/g)].map((m) => m[1]),
+    // Article slugs (excluding /resources/webinars/* which have their own row shape).
+    const articleSlugs = new Set(
+      [...sm.body.matchAll(/<loc>[^<]*\/resources\/([a-z0-9-]+)<\/loc>/g)]
+        .map((m) => m[1])
+        .filter((s) => s !== 'webinars'),
     );
-    inSitemapSize = inSitemap.size;
+    inSitemapSize = articleSlugs.size;
     for (const p of posts) {
-      if (!inSitemap.has(p.slug)) failures.push(`sitemap.xml missing ${p.slug}`);
+      if (!articleSlugs.has(p.slug)) failures.push(`sitemap.xml missing ${p.slug}`);
+    }
+    // Webinar slugs (used by the webinar smoke-check function).
+    for (const m of sm.body.matchAll(/<loc>[^<]*\/resources\/webinars\/([a-z0-9-]+)<\/loc>/g)) {
+      webinarSitemapSlugs.add(m[1]);
+    }
+    if (sm.body.includes(`<loc>${CANONICAL}/resources/webinars</loc>`)) {
+      webinarSitemapSlugs.add('__webinars_hub__');
     }
   }
   if (failures.length === beforeSm) log(`  ${c.green('✓')} sitemap.xml includes ${inSitemapSize} /resources/* entries`);
@@ -203,7 +240,7 @@ async function runSmokeChecks(posts) {
       if (!article.body.includes(`"headline":"${expectedHeadline}"`)) {
         issues.push(`headline mismatch (expected "${p.title}")`);
       }
-      if (!article.body.includes(`<link rel="canonical" href="${BASE}/resources/${p.slug}"`)) {
+      if (!article.body.includes(`<link rel="canonical" href="${CANONICAL}/resources/${p.slug}"`)) {
         issues.push('canonical mismatch');
       }
       return { slug: p.slug, issues };
@@ -220,12 +257,78 @@ async function runSmokeChecks(posts) {
     }
   }
 
+  return { failures, webinarSitemapSlugs };
+}
+
+// ── webinar smoke checks ──────────────────────────────────────────────────
+
+async function runWebinarSmokeChecks(webinars, expectedSitemapSlugs) {
+  const failures = [];
+
+  step(`Fetching /resources/webinars index`);
+  const beforeIndex = failures.length;
+  const index = await fetchText(`${BASE}/resources/webinars`);
+  if (index.status !== 200) failures.push(`/resources/webinars → HTTP ${index.status}`);
+  else {
+    for (const w of webinars) {
+      const needle = `href="/resources/webinars/${w.slug}"`;
+      if (!index.body.includes(needle)) failures.push(`/resources/webinars missing link to ${w.slug}`);
+    }
+  }
+  if (failures.length === beforeIndex)
+    log(`  ${c.green('✓')} /resources/webinars returns 200 and links to all ${webinars.length} webinars`);
+  else log(`  ${c.red('✗')} /resources/webinars — ${failures.length - beforeIndex} issue(s)`);
+
+  step(`Verifying sitemap contains ${webinars.length} webinar URLs + the webinars hub`);
+  const beforeSm = failures.length;
+  if (!expectedSitemapSlugs.has('__webinars_hub__')) failures.push('sitemap.xml missing /resources/webinars hub');
+  for (const w of webinars) {
+    if (!expectedSitemapSlugs.has(w.slug)) failures.push(`sitemap.xml missing webinar ${w.slug}`);
+  }
+  if (failures.length === beforeSm) log(`  ${c.green('✓')} all webinar URLs present in sitemap`);
+  else log(`  ${c.red('✗')} sitemap webinars — ${failures.length - beforeSm} issue(s)`);
+
+  step(`Fetching ${webinars.length} webinar routes (concurrency ${CONCURRENCY})`);
+  const results = await parallel(
+    webinars,
+    async (w) => {
+      const page = await fetchText(`${BASE}/resources/webinars/${w.slug}`);
+      const issues = [];
+      if (page.status !== 200) issues.push(`HTTP ${page.status}`);
+      if (!page.body.includes(`<link rel="canonical" href="${CANONICAL}/resources/webinars/${w.slug}"`)) {
+        issues.push('canonical mismatch');
+      }
+      // VideoObject JSON-LD is only required when the webinar is published.
+      if (w.status === 'published') {
+        if (!page.body.includes('"@type":"VideoObject"')) issues.push('missing VideoObject JSON-LD');
+        const expectedName = w.title.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+        if (!page.body.includes(`"name":"${expectedName}"`)) issues.push(`VideoObject name mismatch (expected "${w.title}")`);
+      } else {
+        // For unpublished, make sure we're NOT accidentally emitting a broken VideoObject.
+        if (page.body.includes('"@type":"VideoObject"')) {
+          issues.push('unexpected VideoObject JSON-LD on non-published webinar');
+        }
+      }
+      return { slug: w.slug, status: w.status, issues };
+    },
+    CONCURRENCY,
+  );
+
+  for (const r of results) {
+    if (r.issues.length) {
+      failures.push(`/resources/webinars/${r.slug}: ${r.issues.join(', ')}`);
+      log(`  ${c.red('✗')} ${r.slug} [${r.status}] — ${r.issues.join(', ')}`);
+    } else {
+      log(`  ${c.green('✓')} ${r.slug} [${r.status}]`);
+    }
+  }
+
   return failures;
 }
 
 // ── visual snapshots (Playwright) ─────────────────────────────────────────
 
-async function captureSnapshots(posts, dir) {
+async function captureSnapshots(posts, webinars, dir) {
   step(`Capturing Playwright snapshots to ${dir}/`);
   let chromium;
   try {
@@ -252,6 +355,12 @@ async function captureSnapshots(posts, dir) {
     { name: 'resources-index', url: `${BASE}/resources` },
     { name: `article-${posts[0].slug}`, url: `${BASE}/resources/${posts[0].slug}` },
   ];
+  if (webinars && webinars.length > 0) {
+    targets.push({ name: 'webinars-index', url: `${BASE}/resources/webinars` });
+    // Prefer the first published webinar for the snapshot; fall back to the first one.
+    const featured = webinars.find((w) => w.status === 'published') || webinars[0];
+    targets.push({ name: `webinar-${featured.slug}`, url: `${BASE}/resources/webinars/${featured.slug}` });
+  }
   const artifacts = [];
   for (const t of targets) {
     await page.goto(t.url, { waitUntil: 'networkidle' });
@@ -285,11 +394,19 @@ async function main() {
   const posts = await loadExpectedPosts(values['blog-file']);
   log(c.gray(`  loaded ${posts.length} expected posts from ${values['blog-file']}`));
 
-  const failures = await runSmokeChecks(posts);
+  const webinars = await loadExpectedWebinars(values['webinars-file']);
+  log(c.gray(`  loaded ${webinars.length} expected webinars from ${values['webinars-file']}`));
+
+  const { failures, webinarSitemapSlugs } = await runSmokeChecks(posts);
+
+  if (webinars.length > 0) {
+    const webinarFailures = await runWebinarSmokeChecks(webinars, webinarSitemapSlugs);
+    failures.push(...webinarFailures);
+  }
 
   if (values.snapshot) {
     try {
-      await captureSnapshots(posts, values['snapshot-dir']);
+      await captureSnapshots(posts, webinars, values['snapshot-dir']);
     } catch (err) {
       failures.push(`snapshot: ${err.message}`);
     }
@@ -297,7 +414,7 @@ async function main() {
 
   log('');
   if (failures.length === 0) {
-    log(c.green(c.bold(`✓ All checks passed (${posts.length} articles)`)));
+    log(c.green(c.bold(`✓ All checks passed (${posts.length} articles, ${webinars.length} webinars)`)));
     process.exit(0);
   }
   log(c.red(c.bold(`✗ ${failures.length} check(s) failed:`)));

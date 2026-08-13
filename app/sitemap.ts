@@ -3,6 +3,7 @@ import { services } from '@/lib/content/services';
 import { conditions } from '@/lib/content/conditions';
 import { locations } from '@/lib/content/locations';
 import { blogPosts } from '@/lib/content/blog';
+import { webinars } from '@/lib/content/webinars';
 
 const BASE = 'https://aimphysiotherapy.ca';
 
@@ -67,5 +68,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6,
   }));
 
-  return [...staticRoutes, ...serviceRoutes, ...conditionRoutes, ...locationRoutes, ...resourceRoutes];
+  const webinarIndexRoute = {
+    url: `${BASE}/resources/webinars`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.7,
+  };
+
+  const webinarRoutes = webinars.map((w) => ({
+    url: `${BASE}/resources/webinars/${w.slug}`,
+    lastModified: new Date(w.lastUpdated),
+    changeFrequency: 'monthly' as const,
+    priority: w.status === 'published' ? 0.7 : 0.5,
+  }));
+
+  return [
+    ...staticRoutes,
+    ...serviceRoutes,
+    ...conditionRoutes,
+    ...locationRoutes,
+    ...resourceRoutes,
+    webinarIndexRoute,
+    ...webinarRoutes,
+  ];
 }
