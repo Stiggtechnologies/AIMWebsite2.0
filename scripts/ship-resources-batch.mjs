@@ -32,10 +32,11 @@ const { values, positionals } = parseArgs({
     'base':          { type: 'string', default: 'main' },
     'title':         { type: 'string' },  // default computed from post-count delta
     'stop-after':    { type: 'string' },  // validate|stage|checks|commit|pr|verify-preview|merge|verify-prod
-    'push':          { type: 'boolean', default: false },
-    'auto-merge':    { type: 'boolean', default: false },
-    'skip-checks':   { type: 'boolean', default: false },
-    'dry-run':       { type: 'boolean', default: false },
+    'push':            { type: 'boolean', default: false },
+    'auto-merge':      { type: 'boolean', default: false },
+    'skip-checks':     { type: 'boolean', default: false },
+    'strict-preview':  { type: 'boolean', default: false },
+    'dry-run':         { type: 'boolean', default: false },
     'repo':          { type: 'string', default: 'Stiggtechnologies/AIMWebsite2.0' },
     'help':          { type: 'boolean', default: false },
   },
@@ -56,7 +57,8 @@ Options:
   --push                 Actually push the feature branch (default: dry — commits locally only)
   --auto-merge           After preview verify passes, squash-merge the PR
   --skip-checks          Skip typecheck/lint/build (not recommended)
-  --skip-build           Skip only 'npm run build' inside checks (typecheck+lint still run)
+  --strict-preview       Treat Vercel Protection on the preview as a hard failure
+                         (default: warn and continue — production is still verified)
   --dry-run              Show planned actions; skip mutating remote/git steps
   --blog-file=<path>     Target path for the data module (default: lib/content/blog.ts)
   --repo=<owner/repo>    Repo for gh/deployments (default: Stiggtechnologies/AIMWebsite2.0)
@@ -237,8 +239,15 @@ async function main() {
     previewUrl = await waitForPreviewUrl(prNumber);
     ok(`preview live at ${previewUrl}`);
     const verify = runInherit(`node scripts/verify-resources.mjs --base-url=${previewUrl}`);
-    if (verify.status !== 0) fail('verify-resources failed against preview URL');
-    ok('preview verification passed');
+    if (verify.status === 3) {
+      // Vercel Deployment Protection — best-effort by default.
+      if (values['strict-preview']) fail('preview blocked by Vercel Deployment Protection (--strict-preview set)');
+      warn('preview blocked by Vercel Deployment Protection — skipping (set VERCEL_BYPASS_TOKEN or pass --strict-preview to require)');
+    } else if (verify.status !== 0) {
+      fail('verify-resources failed against preview URL');
+    } else {
+      ok('preview verification passed');
+    }
   }
   haltIfStopAfter('verify-preview');
 
@@ -274,21 +283,36 @@ function dateStamp() {
   return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}`;
 }
 
+// The Vercel GitHub check's `targetUrl` points at the build inspector (vercel.com/...),
+// not the deployed site. The actual preview URL is posted as a PR comment by the Vercel
+// bot in the form https://<project>-git-<slug>-<team>.vercel.app — parse it from there.
 async function waitForPreviewUrl(prNumber, timeoutSec = 600) {
   const startedAt = Date.now();
+  let sawVercelCheck = false;
   while (true) {
-    let checks;
+    let checks, commentsPayload;
     try {
       checks = JSON.parse(run(`gh pr view ${prNumber} --json statusCheckRollup`, { pipe: true }));
+      commentsPayload = JSON.parse(run(`gh pr view ${prNumber} --json comments`, { pipe: true }));
     } catch (err) {
       throw new Error(`gh pr view failed: ${err.message}`);
     }
     const vercel = (checks.statusCheckRollup || []).find((r) => (r.name || r.context || '').toLowerCase() === 'vercel');
-    if (vercel && vercel.state === 'SUCCESS' && vercel.targetUrl) return vercel.targetUrl.replace(/\/$/, '');
+    if (vercel) sawVercelCheck = true;
     if (vercel && (vercel.state === 'FAILURE' || vercel.state === 'ERROR')) {
       throw new Error(`Vercel preview check failed on PR #${prNumber}`);
     }
-    if ((Date.now() - startedAt) / 1000 > timeoutSec) throw new Error(`Timed out waiting for Vercel preview on PR #${prNumber}`);
+    for (const comment of commentsPayload.comments || []) {
+      const m = comment.body && comment.body.match(/https:\/\/[a-zA-Z0-9.-]+\.vercel\.app(?:\/[^ \s)\]]*)?/);
+      if (m) return m[0].replace(/\/$/, '');
+    }
+    if ((Date.now() - startedAt) / 1000 > timeoutSec) {
+      throw new Error(
+        sawVercelCheck
+          ? `Vercel check appeared but no preview URL posted in PR #${prNumber} comments within ${timeoutSec}s`
+          : `Timed out waiting for Vercel preview on PR #${prNumber}`,
+      );
+    }
     process.stdout.write('.');
     await new Promise((r) => setTimeout(r, 10_000));
   }

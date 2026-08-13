@@ -26,6 +26,7 @@ const { values } = parseArgs({
     'wait-timeout':  { type: 'string', default: '600' },  // seconds
     'wait-repo':     { type: 'string', default: 'Stiggtechnologies/AIMWebsite2.0' },
     'concurrency':   { type: 'string', default: '6' },
+    'bypass-token':  { type: 'string', default: process.env.VERCEL_BYPASS_TOKEN || '' },
     'help':          { type: 'boolean', default: false },
   },
 });
@@ -42,8 +43,11 @@ Options:
   --wait-timeout=<secs>     Max wait for --wait-for-sha (default: 600)
   --wait-repo=<owner/repo>  Repo for deployments (default: Stiggtechnologies/AIMWebsite2.0)
   --concurrency=<n>         Max parallel HTTP fetches (default: 6)
+  --bypass-token=<token>    Vercel Protection Bypass for Automation token
+                            (or set VERCEL_BYPASS_TOKEN env var)
 
-Exit codes: 0 all pass · 1 any check failed · 2 config or fetch error`);
+Exit codes: 0 all pass · 1 any check failed · 2 config or fetch error
+            3 Vercel Deployment Protection blocked access (no bypass token)`);
   process.exit(0);
 }
 
@@ -53,10 +57,11 @@ const CONCURRENCY = Math.max(1, parseInt(values.concurrency, 10));
 // ── helpers ────────────────────────────────────────────────────────────────
 
 const c = {
-  green: (s) => `\x1b[32m${s}\x1b[0m`,
-  red:   (s) => `\x1b[31m${s}\x1b[0m`,
-  gray:  (s) => `\x1b[90m${s}\x1b[0m`,
-  bold:  (s) => `\x1b[1m${s}\x1b[0m`,
+  green:  (s) => `\x1b[32m${s}\x1b[0m`,
+  red:    (s) => `\x1b[31m${s}\x1b[0m`,
+  yellow: (s) => `\x1b[33m${s}\x1b[0m`,
+  gray:   (s) => `\x1b[90m${s}\x1b[0m`,
+  bold:   (s) => `\x1b[1m${s}\x1b[0m`,
 };
 
 function log(msg) { process.stdout.write(msg + '\n'); }
@@ -76,9 +81,35 @@ async function parallel(items, worker, limit) {
   return results;
 }
 
+const BYPASS_TOKEN = values['bypass-token'];
+
+function isVercelProtectionUrl(url) {
+  return /^https:\/\/vercel\.com\/(login|sso-api)/.test(url);
+}
+
+class VercelProtectionError extends Error {
+  constructor(url) {
+    super(
+      `Vercel Deployment Protection is blocking ${url}\n` +
+      `  · Fix (either):\n` +
+      `      · Set VERCEL_BYPASS_TOKEN or pass --bypass-token=<token>\n` +
+      `        (Vercel → Project → Settings → Deployment Protection → Protection Bypass for Automation)\n` +
+      `      · Or disable Deployment Protection for preview URLs on this project.`,
+    );
+    this.name = 'VercelProtectionError';
+  }
+}
+
 async function fetchText(url) {
-  const res = await fetch(url, { redirect: 'follow' });
+  const headers = BYPASS_TOKEN ? { 'x-vercel-protection-bypass': BYPASS_TOKEN } : {};
+  // Also append the bypass token as a query param — Vercel accepts both, and the
+  // query form persists across redirects that strip custom headers.
+  const target = BYPASS_TOKEN
+    ? url + (url.includes('?') ? '&' : '?') + 'x-vercel-protection-bypass=' + encodeURIComponent(BYPASS_TOKEN)
+    : url;
+  const res = await fetch(target, { redirect: 'follow', headers });
   const body = await res.text();
+  if (isVercelProtectionUrl(res.url)) throw new VercelProtectionError(url);
   return { status: res.status, body, url: res.url };
 }
 
@@ -130,6 +161,7 @@ async function runSmokeChecks(posts) {
   const failures = [];
 
   step(`Fetching /resources index`);
+  const beforeIndex = failures.length;
   const index = await fetchText(`${BASE}/resources`);
   if (index.status !== 200) failures.push(`/resources → HTTP ${index.status}`);
   else {
@@ -137,21 +169,26 @@ async function runSmokeChecks(posts) {
       const needle = `href="/resources/${p.slug}"`;
       if (!index.body.includes(needle)) failures.push(`/resources index missing link to ${p.slug}`);
     }
-    log(`  ${c.green('✓')} /resources returns 200 and links to all ${posts.length} posts`);
   }
+  if (failures.length === beforeIndex) log(`  ${c.green('✓')} /resources returns 200 and links to all ${posts.length} posts`);
+  else log(`  ${c.red('✗')} /resources index — ${failures.length - beforeIndex} issue(s)`);
 
   step(`Fetching /sitemap.xml`);
+  const beforeSm = failures.length;
   const sm = await fetchText(`${BASE}/sitemap.xml`);
+  let inSitemapSize = 0;
   if (sm.status !== 200) failures.push(`/sitemap.xml → HTTP ${sm.status}`);
   else {
     const inSitemap = new Set(
       [...sm.body.matchAll(/<loc>[^<]*\/resources\/([a-z0-9-]+)<\/loc>/g)].map((m) => m[1]),
     );
+    inSitemapSize = inSitemap.size;
     for (const p of posts) {
       if (!inSitemap.has(p.slug)) failures.push(`sitemap.xml missing ${p.slug}`);
     }
-    log(`  ${c.green('✓')} sitemap.xml includes ${inSitemap.size} /resources/* entries`);
   }
+  if (failures.length === beforeSm) log(`  ${c.green('✓')} sitemap.xml includes ${inSitemapSize} /resources/* entries`);
+  else log(`  ${c.red('✗')} sitemap.xml — ${failures.length - beforeSm} issue(s)`);
 
   step(`Fetching ${posts.length} article routes (concurrency ${CONCURRENCY})`);
   const results = await parallel(
@@ -205,7 +242,10 @@ async function captureSnapshots(posts, dir) {
   } catch {
     browser = await chromium.launch();
   }
-  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 900 },
+    extraHTTPHeaders: BYPASS_TOKEN ? { 'x-vercel-protection-bypass': BYPASS_TOKEN } : undefined,
+  });
   const page = await context.newPage();
 
   const targets = [
@@ -266,6 +306,10 @@ async function main() {
 }
 
 main().catch((err) => {
+  if (err instanceof VercelProtectionError) {
+    console.error(c.yellow(`\n! ${err.message}`));
+    process.exit(3);  // distinct exit code for "auth/protection blocked" vs real failure
+  }
   console.error(c.red(`\nFATAL: ${err.message}`));
   process.exit(2);
 });
