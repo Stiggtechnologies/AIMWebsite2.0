@@ -1,0 +1,75 @@
+name: Verify Resources
+
+# Runs the end-to-end verification (smoke + Playwright snapshots) whenever the
+# Resources/Blog data or rendering surface changes on main, plus a manual trigger.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lib/content/blog.ts'
+      - 'app/resources/**'
+      - 'components/blocks/blog-post-page.tsx'
+      - 'lib/seo.tsx'
+      - 'app/sitemap.ts'
+      - 'scripts/verify-resources.mjs'
+      - '.github/workflows/verify-resources.yml'
+  workflow_dispatch:
+    inputs:
+      base-url:
+        description: 'Site to verify (default: production)'
+        required: false
+        default: 'https://aimphysiotherapy.ca'
+      wait-for-sha:
+        description: 'Optional commit SHA to wait for in Production before verifying'
+        required: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        id: pw-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ms-playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Chromium
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Verify (production, with snapshots)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          BASE_URL="${{ inputs.base-url || 'https://aimphysiotherapy.ca' }}"
+          WAIT_SHA="${{ inputs.wait-for-sha || github.sha }}"
+          # Only push-to-main runs wait for the deploy of that SHA. Manual runs without
+          # an explicit SHA skip the wait and verify current production immediately.
+          if [ "${{ github.event_name }}" = "push" ] || [ -n "${{ inputs.wait-for-sha }}" ]; then
+            node scripts/verify-resources.mjs --base-url="$BASE_URL" --snapshot --wait-for-sha="$WAIT_SHA"
+          else
+            node scripts/verify-resources.mjs --base-url="$BASE_URL" --snapshot
+          fi
+
+      - name: Upload snapshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: resources-snapshots
+          path: verify-artifacts/
+          if-no-files-found: warn
+          retention-days: 30
