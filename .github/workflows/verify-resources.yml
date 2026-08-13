@@ -8,8 +8,10 @@ on:
     branches: [main]
     paths:
       - 'lib/content/blog.ts'
+      - 'lib/content/webinars.ts'
       - 'app/resources/**'
       - 'components/blocks/blog-post-page.tsx'
+      - 'components/blocks/webinar-page.tsx'
       - 'lib/seo.tsx'
       - 'app/sitemap.ts'
       - 'scripts/verify-resources.mjs'
