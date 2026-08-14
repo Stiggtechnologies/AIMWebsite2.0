@@ -153,7 +153,7 @@ export const services: Service[] = [
     category: 'specialty',
   },
   {
-    slug: 'wcb-workplace-injury-rehabilitation',
+    slug: 'wcb-rehabilitation',
     name: 'WCB / Workplace Injury Rehabilitation',
     shortDescription: 'Structured rehabilitation for injured workers and return-to-work recovery.',
     positioning: 'WCB-approved rehabilitation focused on durable return to work — from assessment through work conditioning, work hardening, and functional capacity evaluation.',

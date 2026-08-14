@@ -849,7 +849,7 @@ export const blogPosts: BlogPost[] = [
     readingMinutes: 5,
     relatedConditions: [],
     relatedServices: [
-      "wcb-workplace-injury-rehabilitation"
+      "wcb-rehabilitation"
     ],
     body: [
       {
