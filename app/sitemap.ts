@@ -47,6 +47,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.9,
   }));
 
+  // Service pages that exist as static routes under app/services/ but are not
+  // entries in the services data module (so the map above misses them).
+  const routeOnlyServicePages = [
+    'functional-capacity-evaluations',
+    'manual-osteopathy',
+    'performance-rehabilitation',
+    'return-to-work',
+    'work-conditioning',
+    'work-hardening',
+  ].map((slug) => ({
+    url: `${BASE}/services/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly' as const,
+    priority: 0.8,
+  }));
+
   const conditionRoutes = conditions.map((c) => ({
     url: `${BASE}/conditions/${c.slug}`,
     lastModified: new Date(),
@@ -85,6 +101,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     ...staticRoutes,
     ...serviceRoutes,
+    ...routeOnlyServicePages,
     ...conditionRoutes,
     ...locationRoutes,
     ...resourceRoutes,
