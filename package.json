@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "verify:resources": "node scripts/verify-resources.mjs",
     "verify:resources:visual": "node scripts/verify-resources.mjs --snapshot",
-    "ship:resources": "node scripts/ship-resources-batch.mjs"
+    "ship:resources": "node scripts/ship-resources-batch.mjs",
+    "test": "node --test --experimental-strip-types \"lib/**/*.test.ts\""
   },
   "devDependencies": {
     "playwright": "^1.48.0"
