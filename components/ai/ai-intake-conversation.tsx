@@ -345,6 +345,12 @@ export function AIIntakeConversation() {
                 location: selectedLocation,
                 contact_method: 'phone',
                 contact_value: intakeData.patient_data.phone,
+                // Collected earlier in this same conversation and previously
+                // discarded at the API boundary. The front desk cannot return a
+                // call to a record with no name on it.
+                first_name: intakeData.patient_data.first_name,
+                last_name: intakeData.patient_data.last_name,
+                email: intakeData.patient_data.email,
                 booking_mode: 'PATIENT_SELF_BOOK',
                 urgency: 'medium',
                 notes: `AI Intake - ${intakeData.injury_data.injury_type}`,

@@ -14,6 +14,13 @@ const bookingConfirmSchema = z.object({
   preferred_times: z.array(z.string()).optional(),
   contact_method: z.enum(['phone', 'email', 'either']),
   contact_value: z.string().min(1),
+  // The AI intake conversation already collects the patient's name and phone
+  // (components/ai/ai-intake-conversation.tsx) and then threw them away, because
+  // this schema had nowhere to put them. A callback queue without a name is
+  // barely a lead — the front desk cannot ring "7805550142" and ask for nobody.
+  first_name: z.string().optional(),
+  last_name: z.string().optional(),
+  email: z.string().optional(),
   booking_mode: z.enum(['PATIENT_SELF_BOOK', 'EMPLOYER_CONSULT', 'INSURER_REFERRAL', 'CALLBACK_REQUIRED']).optional(),
   urgency: z.enum(['low', 'medium', 'high']).optional(),
   notes: z.string().optional(),
@@ -52,20 +59,51 @@ export async function POST(request: NextRequest) {
     const supabase = createServerSupabaseClient();
     const locationSlug = validatedData.location || DEFAULT_LOCATION.slug;
 
+    // Where a website booking becomes a lead the clinic can actually work.
+    //
+    // crm_leads is the canonical lead record: it is what the Leads screen
+    // (LeadPipelineKanban), the CRM dashboard, the intake-conversion view and
+    // crmAlertService all read. public_leads was written here and read by
+    // nothing — a queue with no reader. Writing to both would leave the front
+    // desk guessing which list is real, so this writes to crm_leads only.
+    //
+    // crm_leads also carries utm_source / utm_medium / utm_campaign, which is
+    // what connects a booking back to the Google Ads click that produced it.
+    // public_leads had no such columns, so every paid booking was
+    // unattributable the moment it landed.
+    //
+    // first_name / last_name / phone are NOT NULL on crm_leads, deliberately:
+    // the front desk cannot return a call to an anonymous record. Where the
+    // caller did not give a name we store a legible placeholder carrying the
+    // booking reference rather than a blank, so the row reads honestly on
+    // screen as an unnamed web enquiry instead of looking like bad data.
+    const contactIsEmail = validatedData.contact_method === 'email'
+      || /@/.test(validatedData.contact_value);
+    // NOT NULL on crm_leads. An email-only enquiry genuinely has no phone yet;
+    // empty string records that honestly rather than inventing a number.
+    const phone = contactIsEmail ? '' : validatedData.contact_value;
+    const email = contactIsEmail ? validatedData.contact_value : validatedData.email ?? null;
+
     const { data: lead, error: leadError } = await supabase
-      .from('public_leads')
+      .from('crm_leads')
       .insert({
-        persona: validatedData.persona,
-        program_interest: validatedData.program ? [validatedData.program] : [],
-        location_slug: locationSlug,
-        urgency: validatedData.urgency || 'low',
-        contact_method: validatedData.contact_method,
-        contact_value: validatedData.contact_value,
+        first_name: validatedData.first_name?.trim() || 'Web',
+        last_name: validatedData.last_name?.trim() || 'enquiry',
+        phone,
+        email,
         status: 'new',
-        booking_mode: validatedData.booking_mode || 'PATIENT_SELF_BOOK',
-        preferred_times: validatedData.preferred_times || [],
-        notes: validatedData.notes,
-        qualification_state: 'QUALIFIED_BOOK_NOW',
+        priority: validatedData.urgency === 'high' ? 'high'
+          : validatedData.urgency === 'medium' ? 'medium' : 'low',
+        urgency_level: validatedData.urgency || 'low',
+        channel_source: 'website',
+        funnel_type: validatedData.program || null,
+        notes: [
+          `Persona: ${validatedData.persona}`,
+          validatedData.booking_mode ? `Mode: ${validatedData.booking_mode}` : null,
+          validatedData.preferred_times?.length
+            ? `Preferred: ${validatedData.preferred_times.join(', ')}` : null,
+          validatedData.notes || null,
+        ].filter(Boolean).join(' · '),
       })
       .select()
       .single();
@@ -144,7 +182,7 @@ export async function POST(request: NextRequest) {
         aimosResponse = await aimOS.confirmBooking(bookingConfirmation);
       } catch (handoffError) {
         console.error(
-          'AIM OS handoff failed for booking_ref %s (lead is saved; front desk must work it from public_leads):',
+          'AIM OS handoff failed for booking_ref %s (lead is saved in crm_leads; the front desk works it from the Leads screen):',
           bookingRef,
           handoffError
         );
