@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     expiresAt.setDate(expiresAt.getDate() + 30);
 
     const { data: token, error: tokenError } = await supabase
-      .from('booking_tokens')
+      .from('public_booking_tokens')
       .insert({
         booking_ref: bookingRef,
         lead_id: lead.id,

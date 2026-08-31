@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     const supabase = createServerSupabaseClient();
 
     const { data: token, error: tokenError } = await supabase
-      .from('booking_tokens')
+      .from('public_booking_tokens')
       .select('*, lead:public_leads(*)')
       .eq('booking_ref', validatedData.booking_ref)
       .eq('status', 'active')
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     if (new Date(token.expires_at) < new Date()) {
       await supabase
-        .from('booking_tokens')
+        .from('public_booking_tokens')
         .update({ status: 'expired' })
         .eq('id', token.id);
 
