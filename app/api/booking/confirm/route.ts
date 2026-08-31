@@ -126,7 +126,29 @@ export async function POST(request: NextRequest) {
         handoff_token: bookingRef,
       };
 
-      const aimosResponse = await aimOS.confirmBooking(bookingConfirmation);
+      // The lead and its booking token are already committed above. From here
+      // on, the patient's request is safe in the database and the clinic can act
+      // on it — so nothing downstream may be allowed to tell them it failed.
+      //
+      // aimOS.confirmBooking() posts to AIM_OS_API_BASE, which defaults to
+      // https://api.aimos.ca. That host has no DNS record and the env var is not
+      // set on this project, so the call throws on every request and the catch
+      // below turned every successful booking into a 500. Verified in production
+      // 2026-08-30: lead aadbcd3d was written, its token was written, and the
+      // patient still received {"error":"Failed to confirm booking"}.
+      //
+      // A handoff to a system that may not be reachable is best-effort. It is
+      // logged so the gap is visible, and the booking is confirmed regardless.
+      let aimosResponse: { status: string } | Record<string, never> = {};
+      try {
+        aimosResponse = await aimOS.confirmBooking(bookingConfirmation);
+      } catch (handoffError) {
+        console.error(
+          'AIM OS handoff failed for booking_ref %s (lead is saved; front desk must work it from public_leads):',
+          bookingRef,
+          handoffError
+        );
+      }
 
       return NextResponse.json({
         success: true,
