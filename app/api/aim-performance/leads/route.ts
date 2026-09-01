@@ -51,7 +51,28 @@ const LeadSchema = z.object({
   utm_term: z.string().trim().optional().nullable(),
 });
 
+// AIM Performance South Common is paused (2026-09-01), so this endpoint no
+// longer accepts submissions. The UI shows <RegistrationPaused/> instead of the
+// form, but the route is public and must refuse on its own — hiding a form does
+// not stop a POST. 410 rather than 404: the resource existed and is gone for
+// now, which is the honest status code and stops clients retrying.
+//
+// To re-open: delete this block and restore <LeadForm/> in
+// app/aim-performance-south-common/page.tsx. Nothing below was removed.
+const REGISTRATION_PAUSED = true;
+
 export async function POST(request: NextRequest) {
+  if (REGISTRATION_PAUSED) {
+    return NextResponse.json(
+      {
+        error: 'Founder Access registration is closed',
+        detail:
+          'AIM Performance South Common is on hold and is not accepting registrations or assessment requests.',
+      },
+      { status: 410 }
+    );
+  }
+
   const clientId = request.headers.get('x-forwarded-for') || 'unknown';
   const rateLimit = checkRateLimit(`aim-performance-leads:${clientId}`);
 
