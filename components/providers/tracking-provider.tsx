@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { PersonaEngine, getSessionId, PersonaType, PersonaScores } from '@/lib/persona';
 import { EventDispatcher, initializeEventTracking, EventType } from '@/lib/events';
+import { captureUtmsFromWindow } from '@/lib/utm';
 
 interface TrackingContextValue {
   sessionId: string;
@@ -42,6 +43,12 @@ export function TrackingProvider({ children }: { children: ReactNode }) {
       setPersonaScores(data.confidence_scores);
     });
   }, [personaEngine]);
+
+  // Persist Google Ads UTMs from the landing URL so a later booking on
+  // /ai-intake still carries source/medium/campaign. See lib/utm.ts.
+  useEffect(() => {
+    captureUtmsFromWindow();
+  }, []);
 
   const updatePersona = useCallback(() => {
     const newPersonaType = personaEngine.getTopPersona();

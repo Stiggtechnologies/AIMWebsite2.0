@@ -47,6 +47,17 @@ describe('a patient can actually book', () => {
       assert.equal(r.isValid, true, `rejected ${v}: ${r.violations.join('; ')}`);
     }
   });
+
+  test('Google Ads UTM fields are not treated as PHI', () => {
+    const r = blockPHIInPayload(bookingPayload('780-555-0142', {
+      utm_source: 'google',
+      utm_medium: 'cpc',
+      utm_campaign: 'edmonton-physio',
+      utm_content: 'brand',
+      utm_term: 'physiotherapy edmonton',
+    }));
+    assert.equal(r.isValid, true, `rejected a paid booking: ${r.violations.join('; ')}`);
+  });
 });
 
 describe('the guard still guards', () => {

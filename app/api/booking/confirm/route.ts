@@ -4,7 +4,16 @@ import { checkRateLimit, getRateLimitHeaders } from '@/lib/rate-limiter';
 import { blockPHIInPayload } from '@/lib/phi-validator';
 import { createServerSupabaseClient } from '@/lib/supabase';
 import { DEFAULT_LOCATION } from '@/lib/config';
+import { clinicIdForLocation } from '@/lib/clinic';
+import {
+  mergeUtms,
+  readUtmsFromCookieHeader,
+  readUtmsFromSearchParams,
+  utmsForCrmInsert,
+} from '@/lib/utm';
 import { z } from 'zod';
+
+const optionalUtm = z.string().trim().optional().nullable();
 
 const bookingConfirmSchema = z.object({
   handoff_type: z.literal('booking').optional(),
@@ -24,6 +33,11 @@ const bookingConfirmSchema = z.object({
   booking_mode: z.enum(['PATIENT_SELF_BOOK', 'EMPLOYER_CONSULT', 'INSURER_REFERRAL', 'CALLBACK_REQUIRED']).optional(),
   urgency: z.enum(['low', 'medium', 'high']).optional(),
   notes: z.string().optional(),
+  utm_source: optionalUtm,
+  utm_medium: optionalUtm,
+  utm_campaign: optionalUtm,
+  utm_content: optionalUtm,
+  utm_term: optionalUtm,
 });
 
 export async function POST(request: NextRequest) {
@@ -58,6 +72,25 @@ export async function POST(request: NextRequest) {
 
     const supabase = createServerSupabaseClient();
     const locationSlug = validatedData.location || DEFAULT_LOCATION.slug;
+    // AIM-EDM-001 (Centre 87). RLS hides any crm_leads row whose clinic_id
+    // is NULL, which is why website bookings after #10 landed in the table
+    // and still did not appear on the Leads screen. Verified live 2026-09-01.
+    const clinicId = clinicIdForLocation(locationSlug);
+
+    // Body first (AI intake / booking client), then first-party cookies
+    // written on the landing hit, then the request query. Paid clicks that
+    // land on `/` and later book still attribute.
+    const utms = utmsForCrmInsert(mergeUtms(
+      {
+        utm_source: validatedData.utm_source ?? undefined,
+        utm_medium: validatedData.utm_medium ?? undefined,
+        utm_campaign: validatedData.utm_campaign ?? undefined,
+        utm_content: validatedData.utm_content ?? undefined,
+        utm_term: validatedData.utm_term ?? undefined,
+      },
+      readUtmsFromCookieHeader(request.headers.get('cookie')),
+      readUtmsFromSearchParams(request.nextUrl.searchParams),
+    ));
 
     // Where a website booking becomes a lead the clinic can actually work.
     //
@@ -70,7 +103,8 @@ export async function POST(request: NextRequest) {
     // crm_leads also carries utm_source / utm_medium / utm_campaign, which is
     // what connects a booking back to the Google Ads click that produced it.
     // public_leads had no such columns, so every paid booking was
-    // unattributable the moment it landed.
+    // unattributable the moment it landed. The insert below writes those
+    // columns (plus content/term) when the client or cookies have them.
     //
     // first_name / last_name / phone are NOT NULL on crm_leads, deliberately:
     // the front desk cannot return a call to an anonymous record. Where the
@@ -87,6 +121,7 @@ export async function POST(request: NextRequest) {
     const { data: lead, error: leadError } = await supabase
       .from('crm_leads')
       .insert({
+        clinic_id: clinicId,
         first_name: validatedData.first_name?.trim() || 'Web',
         last_name: validatedData.last_name?.trim() || 'enquiry',
         phone,
@@ -97,6 +132,7 @@ export async function POST(request: NextRequest) {
         urgency_level: validatedData.urgency || 'low',
         channel_source: 'website',
         funnel_type: validatedData.program || null,
+        ...utms,
         notes: [
           `Persona: ${validatedData.persona}`,
           validatedData.booking_mode ? `Mode: ${validatedData.booking_mode}` : null,
@@ -124,7 +160,14 @@ export async function POST(request: NextRequest) {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);
 
-    const { data: token, error: tokenError } = await supabase
+    // public_booking_tokens.lead_id still FKs to public_leads(id) in AIMOS.
+    // After #10 this insert writes a crm_leads id, so the token row fails
+    // until a sibling AIMOS migration retargets that FK to crm_leads.
+    // Do not invent a public_leads row to satisfy the old constraint.
+    // Keep attempting the insert so tokens start working the moment the
+    // migration ships; if it fails, log and still confirm the booking
+    // (patient response stays 200 — same contract as #9).
+    const { error: tokenError } = await supabase
       .from('public_booking_tokens')
       .insert({
         booking_ref: bookingRef,
@@ -142,7 +185,10 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (tokenError) {
-      console.error('Error creating booking token:', tokenError);
+      console.error(
+        'Error creating booking token (AIMOS public_booking_tokens.lead_id still FKs to public_leads; crm_leads id will fail until that migration ships):',
+        tokenError
+      );
     }
 
     await supabase.from('events').insert({

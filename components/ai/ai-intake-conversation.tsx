@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useTracking } from '@/components/providers/tracking-provider';
 import { bookableLocations } from '@/lib/content/locations';
+import { getUtmsForPayload } from '@/lib/utm';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -354,6 +355,10 @@ export function AIIntakeConversation() {
                 booking_mode: 'PATIENT_SELF_BOOK',
                 urgency: 'medium',
                 notes: `AI Intake - ${intakeData.injury_data.injury_type}`,
+                // URL / sessionStorage / first-party cookies captured on the
+                // landing hit (lib/utm.ts). Without this, a Google Ads click
+                // that books arrives in crm_leads with UTMs null.
+                ...getUtmsForPayload(),
               }),
             });
 
