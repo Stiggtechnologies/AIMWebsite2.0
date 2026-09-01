@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { services } from '@/lib/content/services';
 import { conditions } from '@/lib/content/conditions';
-import { locations } from '@/lib/content/locations';
+import { publicLocations } from '@/lib/content/locations';
 import { blogPosts } from '@/lib/content/blog';
 import { webinars } from '@/lib/content/webinars';
 
@@ -32,7 +32,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/privacy',
     '/terms-of-use',
     '/accessibility',
-    '/aim-performance-south-common',
   ].map((p) => ({
     url: `${BASE}${p}`,
     lastModified: new Date(),
@@ -70,7 +69,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  const locationRoutes = locations.map((l) => ({
+  // Paused locations are excluded: asking Google to index a clinic that is
+  // not going ahead is how a stale opening date ends up in search results.
+  const locationRoutes = publicLocations().map((l) => ({
     url: `${BASE}/locations/${l.slug}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,

@@ -26,7 +26,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { JsonLd } from '@/lib/seo';
-import { LeadForm } from './lead-form';
+import { RegistrationPaused } from './registration-paused';
 
 // AIM Performance South Common — premium launch landing page.
 //
@@ -65,6 +65,10 @@ export const metadata: Metadata = {
   description:
     'AIM Performance South Common is launching inside Evolve Strength in Edmonton. Join Founder Access for performance education, recovery resources, launch workshops, and priority access. Paid physiotherapy assessments available separately.',
   alternates: { canonical: PAGE_URL },
+  // South Common is paused, so this page must not be advertised. It stays
+  // reachable by direct link for anyone who already has one (Evolve Strength
+  // materials, existing shares) but is out of search and out of the sitemap.
+  robots: { index: false, follow: false },
   openGraph: {
     type: 'website',
     locale: 'en_CA',
@@ -1287,7 +1291,11 @@ export default function AIMPerformanceSouthCommonPage() {
             </p>
           </div>
           <div className="mt-10">
-            <LeadForm />
+            {/* Registration is closed while South Common is paused. The form
+                is left in the tree, unrendered, so restoring it is one line.
+                The API route refuses submissions too — a disabled form is not
+                a closed endpoint. */}
+            <RegistrationPaused />
           </div>
         </div>
       </section>
