@@ -23,7 +23,8 @@ describe('clinic_id for website bookings', () => {
     assert.equal(clinicIdForLocation('edmonton-main-hub'), AIM_EDM_001_CLINIC_ID);
   });
 
-  test('DEFAULT_LOCATION.slug maps to AIM-EDM-001', () => {
+  test('DEFAULT_LOCATION.slug is edmonton-main-hub and maps to AIM-EDM-001', () => {
+    assert.equal(DEFAULT_LOCATION.slug, 'edmonton-main-hub');
     assert.equal(clinicIdForLocation(DEFAULT_LOCATION.slug), AIM_EDM_001_CLINIC_ID);
   });
 
