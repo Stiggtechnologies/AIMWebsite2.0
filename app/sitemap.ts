@@ -50,7 +50,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // entries in the services data module (so the map above misses them).
   const routeOnlyServicePages = [
     'functional-capacity-evaluations',
-    'manual-osteopathy',
     'performance-rehabilitation',
     'return-to-work',
     'work-conditioning',

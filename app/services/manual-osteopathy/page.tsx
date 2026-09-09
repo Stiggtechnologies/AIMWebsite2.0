@@ -13,8 +13,8 @@ import { supabase } from '@/lib/supabase';
 import { CENTRAL_PHONE_DISPLAY, CENTRAL_PHONE_TEL } from '@/lib/config';
 
 export const metadata = {
-  title: 'Manual Osteopathy in Edmonton | Alberta Injury Management',
-  description: 'Manual osteopathy at Alberta Injury Management offers hands-on, whole-body treatment to improve mobility, reduce pain, and restore balance. Complementary care available in Edmonton.',
+  title: 'Manual Osteopathic Therapy in Edmonton | Alberta Injury Management',
+  description: 'Manual osteopathic therapy at Alberta Injury Management offers gentle, hands-on care focused on movement, comfort, and individual goals. Appointments are available in Edmonton.',
 };
 
 async function getServiceReviews(serviceTag: string) {
@@ -32,8 +32,8 @@ async function getServiceReviews(serviceTag: string) {
 export default async function ManualOsteopathyPage() {
   const reviews = await getServiceReviews('manual-osteopathy');
   const serviceSchema = generateServiceSchema(
-    'Manual Osteopathy',
-    'Hands-on manual osteopathy to support mobility, reduce pain, and restore balance. Complementary care available in Edmonton.'
+    'Manual Osteopathic Therapy',
+    'Gentle, hands-on manual osteopathic therapy focused on movement, comfort, and individual goals. Appointments are available in Edmonton.'
   );
 
   const procedureSchema = generateTherapeuticProcedureSchema(
@@ -81,7 +81,7 @@ export default async function ManualOsteopathyPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h1 className="text-4xl font-bold tracking-tight text-aim-navy sm:text-5xl">
-              Manual Osteopathy — Hands-On Care Focused on Whole-Body Function
+              Manual Osteopathic Therapy — Gentle, Hands-On Care
             </h1>
             <p className="mt-6 text-lg leading-8 text-aim-slate">
               Manual osteopathy is a gentle, hands-on approach that focuses on how the body moves, adapts, and compensates as a system.
@@ -91,9 +91,9 @@ export default async function ManualOsteopathyPage() {
             </p>
             <div className="mt-10">
               <ServiceCTA
-                serviceName="Manual Osteopathy"
+                serviceName="Manual Osteopathic Therapy"
                 serviceSlug="manual-osteopathy"
-                primaryLabel="Book Manual Osteopathy"
+                primaryLabel="Request an Appointment"
                 secondaryLabel={`Call ${CENTRAL_PHONE_DISPLAY}`}
               />
             </div>
@@ -300,7 +300,7 @@ export default async function ManualOsteopathyPage() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild className="bg-aim-cta-primary hover:bg-aim-cta-primary/90">
-                <Link href="/book">Book Manual Osteopathy</Link>
+                <Link href="/intake/form?service=manual-osteopathy">Request an Appointment</Link>
               </Button>
               <Button size="lg" variant="outline" asChild className="border-aim-navy text-aim-navy hover:bg-aim-steel-blue">
                 <Link href={`tel:${CENTRAL_PHONE_TEL}`} className="flex items-center gap-2">

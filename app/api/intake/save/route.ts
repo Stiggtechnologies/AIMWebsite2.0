@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/rate-limiter';
+import { clinicIdForLocation } from '@/lib/clinic';
+import {
+  mergeUtms,
+  readUtmsFromCookieHeader,
+  readUtmsFromSearchParams,
+  utmsForCrmInsert,
+} from '@/lib/utm';
 
 /**
  * Fire-and-forget POST to a clinic notification webhook so submissions
@@ -29,6 +36,66 @@ function notifyClinic(payload: Record<string, any>): void {
       console.error('Intake notification webhook failed:', err);
     })
     .finally(() => clearTimeout(timeoutId));
+}
+
+function channelFromAttribution(source?: string): string {
+  const normalized = source?.trim().toLowerCase();
+  if (normalized === 'facebook') return 'facebook';
+  if (normalized === 'instagram') return 'instagram';
+  if (normalized === 'linkedin') return 'linkedin';
+  if (normalized === 'google') return 'google_business';
+  return 'website';
+}
+
+async function mirrorSubmittedIntakeToCRM(
+  submissionId: string,
+  body: Record<string, any>,
+  request: NextRequest,
+): Promise<void> {
+  const patientData = body.patient_data || {};
+  const firstName = String(patientData.first_name || '').trim() || 'Web';
+  const lastName = String(patientData.last_name || '').trim() || 'enquiry';
+  const note = `Quick intake ${submissionId} · Preferred location: ${body.preferred_location || 'not provided'}`;
+  const utms = mergeUtms(
+    {
+      utm_source: body.utm_source,
+      utm_medium: body.utm_medium,
+      utm_campaign: body.utm_campaign,
+      utm_content: body.utm_content,
+      utm_term: body.utm_term,
+    },
+    readUtmsFromCookieHeader(request.headers.get('cookie')),
+    readUtmsFromSearchParams(request.nextUrl.searchParams),
+  );
+
+  const { data: existing } = await supabase
+    .from('crm_leads')
+    .select('id')
+    .eq('notes', note)
+    .limit(1);
+
+  if (existing?.length) return;
+
+  const { error } = await supabase.from('crm_leads').insert({
+    clinic_id: clinicIdForLocation(body.preferred_location || patientData.preferred_location),
+    first_name: firstName,
+    last_name: lastName,
+    phone: String(patientData.phone || '').trim(),
+    email: patientData.email || null,
+    status: 'new',
+    priority: 'low',
+    urgency_level: 'low',
+    channel_source: channelFromAttribution(utms.utm_source),
+    funnel_type: body.program_interest || null,
+    ...utmsForCrmInsert(utms),
+    notes: note,
+  });
+
+  if (error) {
+    // The intake is already safely stored. Keep the patient-facing submission
+    // successful while making the AIMOS mirror failure visible to operators.
+    console.error('Failed to mirror submitted intake into AIMOS lead queue:', error);
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -98,6 +165,7 @@ export async function POST(request: NextRequest) {
       }
 
       if (status === 'submitted') {
+        await mirrorSubmittedIntakeToCRM(data.id, body, request);
         notifyClinic({
           event: 'intake_submitted',
           submission_id: data.id,
@@ -139,6 +207,7 @@ export async function POST(request: NextRequest) {
       }
 
       if (status === 'submitted') {
+        await mirrorSubmittedIntakeToCRM(data.id, body, request);
         notifyClinic({
           event: 'intake_submitted',
           submission_id: data.id,

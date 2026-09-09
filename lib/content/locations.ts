@@ -93,6 +93,8 @@ export const locations: Location[] = [
       'mva-rehabilitation',
       'wcb-rehabilitation',
       'massage-therapy',
+      'manual-osteopathy',
+      'orthotics',
       'chiropractic-care',
       'direct-billing',
     ],

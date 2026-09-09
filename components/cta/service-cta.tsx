@@ -15,9 +15,28 @@ interface ServiceCTAProps {
 export function ServiceCTA({ serviceName, serviceSlug, primaryLabel, secondaryLabel }: ServiceCTAProps) {
   const { personaType } = useTracking();
 
-  const bookingUrl = `/book?service=${serviceSlug}`;
+  const usesQuickIntake = ['chiropractic-care', 'manual-osteopathy', 'orthotics'].includes(serviceSlug);
+  const bookingUrl = usesQuickIntake
+    ? `/intake/form?service=${serviceSlug}`
+    : `/book?service=${serviceSlug}`;
 
   const getCTAs = () => {
+    if (usesQuickIntake) {
+      return {
+        primary: {
+          label: primaryLabel || `Request ${serviceName}`,
+          href: bookingUrl,
+          variant: 'default' as const,
+        },
+        secondary: {
+          label: secondaryLabel || 'Call (780) 250-8188',
+          href: 'tel:+17802508188',
+          variant: 'outline' as const,
+          isPhone: true,
+        },
+      };
+    }
+
     if (personaType === 'injured_worker') {
       return {
         primary: {

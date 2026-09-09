@@ -3,11 +3,11 @@ import { ServicePage } from '@/components/blocks/service-page';
 import { buildMetadata } from '@/lib/seo';
 import { notFound } from 'next/navigation';
 
-const SLUG = 'chiropractic-care';
+const SLUG = 'orthotics';
 
 export const metadata = buildMetadata({
-  title: 'Chiropractic Care in Edmonton',
-  description: 'Dr. Ramadan Hochaimi, D.C. is now accepting new chiropractic patients at AIM Edmonton Main Hub. Call or complete the intake form to request an appointment.',
+  title: 'Foot Orthotics in Edmonton',
+  description: 'Assessment-led foot orthotics fitting and follow-up at AIM Edmonton Main Hub. Request an appointment and confirm your benefit-plan requirements before treatment.',
   path: `/services/${SLUG}`,
 });
 

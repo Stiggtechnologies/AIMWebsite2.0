@@ -9,6 +9,11 @@ import { JsonLd, faqSchema } from '@/lib/seo';
 
 export function ServicePage({ service }: { service: Service }) {
   const locationsOffering = locations.filter((l) => l.services.includes(service.slug));
+  const usesQuickIntake = ['chiropractic-care', 'manual-osteopathy', 'orthotics'].includes(service.slug);
+  const bookingHref = usesQuickIntake
+    ? `/intake/form?service=${service.slug}`
+    : `/book?service=${service.slug}`;
+  const bookingLabel = usesQuickIntake ? 'Request an Appointment' : 'Book Now';
   return (
     <>
       <JsonLd data={faqSchema(service.faqs)} />
@@ -16,7 +21,7 @@ export function ServicePage({ service }: { service: Service }) {
         eyebrow="Service"
         headline={service.name}
         subheadline={service.positioning}
-        primaryCta={{ label: 'Book Now', href: `/book?service=${service.slug}` }}
+        primaryCta={{ label: bookingLabel, href: bookingHref }}
         secondaryCta={{ label: 'Find a Location', href: '/locations' }}
       />
 
@@ -71,7 +76,7 @@ export function ServicePage({ service }: { service: Service }) {
       <CtaStrip
         headline={`Ready to start ${service.name.toLowerCase()}?`}
         subheadline="Book your initial assessment at the AIM clinic nearest you."
-        primaryCta={{ label: 'Book Now', href: `/book?service=${service.slug}` }}
+        primaryCta={{ label: bookingLabel, href: bookingHref }}
         secondaryCta={{ label: 'Contact Us', href: '/contact' }}
       />
     </>
