@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { createServerSupabaseClient, supabase } from '@/lib/supabase';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/rate-limiter';
 import { clinicIdForLocation } from '@/lib/clinic';
+import { notifyClinicAboutLead } from '@/lib/clinic-lead-notifications';
 import {
   mergeUtms,
   readUtmsFromCookieHeader,
@@ -52,10 +53,14 @@ async function mirrorSubmittedIntakeToCRM(
   body: Record<string, any>,
   request: NextRequest,
 ): Promise<void> {
+  const serverSupabase = createServerSupabaseClient();
   const patientData = body.patient_data || {};
   const firstName = String(patientData.first_name || '').trim() || 'Web';
   const lastName = String(patientData.last_name || '').trim() || 'enquiry';
-  const note = `Quick intake ${submissionId} · Preferred location: ${body.preferred_location || 'not provided'}`;
+  const reference = `INTAKE-${submissionId.slice(0, 8).toUpperCase()}`;
+  const locationSlug = body.preferred_location || patientData.preferred_location;
+  const clinicId = clinicIdForLocation(locationSlug);
+  const note = `Quick intake ${submissionId} · Reference: ${reference} · Preferred location: ${body.preferred_location || 'not provided'}`;
   const utms = mergeUtms(
     {
       utm_source: body.utm_source,
@@ -68,7 +73,7 @@ async function mirrorSubmittedIntakeToCRM(
     readUtmsFromSearchParams(request.nextUrl.searchParams),
   );
 
-  const { data: existing } = await supabase
+  const { data: existing } = await serverSupabase
     .from('crm_leads')
     .select('id')
     .eq('notes', note)
@@ -76,8 +81,9 @@ async function mirrorSubmittedIntakeToCRM(
 
   if (existing?.length) return;
 
-  const { error } = await supabase.from('crm_leads').insert({
-    clinic_id: clinicIdForLocation(body.preferred_location || patientData.preferred_location),
+  const { data: lead, error } = await serverSupabase.from('crm_leads').insert({
+    external_id: reference,
+    clinic_id: clinicId,
     first_name: firstName,
     last_name: lastName,
     phone: String(patientData.phone || '').trim(),
@@ -89,13 +95,31 @@ async function mirrorSubmittedIntakeToCRM(
     funnel_type: body.program_interest || null,
     ...utmsForCrmInsert(utms),
     notes: note,
-  });
+  }).select('id').single();
 
-  if (error) {
+  if (error || !lead) {
     // The intake is already safely stored. Keep the patient-facing submission
     // successful while making the AIMOS mirror failure visible to operators.
     console.error('Failed to mirror submitted intake into AIMOS lead queue:', error);
+    return;
   }
+
+  await notifyClinicAboutLead(serverSupabase, {
+    clinicId,
+    leadId: lead.id,
+    reference,
+    title: 'New website intake',
+    type: 'website_intake_lead',
+    name: `${firstName} ${lastName}`,
+    email: patientData.email || null,
+    phone: String(patientData.phone || '').trim(),
+    requestLabel: body.program_interest || 'Quick intake',
+    source: utms.utm_source || 'website',
+    location: locationSlug || 'edmonton-main-hub',
+    replyTo: patientData.email || null,
+  }).catch((notificationError) => {
+    console.error('Intake lead notification failed unexpectedly:', notificationError);
+  });
 }
 
 export async function POST(request: NextRequest) {

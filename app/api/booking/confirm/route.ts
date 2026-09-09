@@ -5,6 +5,7 @@ import { blockPHIInPayload } from '@/lib/phi-validator';
 import { createServerSupabaseClient } from '@/lib/supabase';
 import { DEFAULT_LOCATION } from '@/lib/config';
 import { clinicIdForLocation } from '@/lib/clinic';
+import { notifyClinicAboutLead } from '@/lib/clinic-lead-notifications';
 import {
   mergeUtms,
   readUtmsFromCookieHeader,
@@ -157,6 +158,14 @@ export async function POST(request: NextRequest) {
 
     const bookingRef = bookingRefData || `BK${Date.now()}`;
 
+    const { error: referenceError } = await supabase
+      .from('crm_leads')
+      .update({ external_id: bookingRef })
+      .eq('id', lead.id);
+    if (referenceError) {
+      console.error('Failed to attach booking reference to AIM OS lead:', referenceError);
+    }
+
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);
 
@@ -200,6 +209,23 @@ export async function POST(request: NextRequest) {
         location: locationSlug,
         booking_mode: validatedData.booking_mode,
       },
+    });
+
+    await notifyClinicAboutLead(supabase, {
+      clinicId,
+      leadId: lead.id,
+      reference: bookingRef,
+      title: 'New website booking request',
+      type: 'website_booking_lead',
+      name: `${validatedData.first_name?.trim() || 'Web'} ${validatedData.last_name?.trim() || 'enquiry'}`,
+      email,
+      phone,
+      requestLabel: validatedData.program || validatedData.booking_mode || 'Booking / callback request',
+      source: utms.utm_source || 'website',
+      location: locationSlug,
+      replyTo: email,
+    }).catch((notificationError) => {
+      console.error('Booking lead notification failed unexpectedly:', notificationError);
     });
 
     if (validatedData.booking_mode === 'PATIENT_SELF_BOOK') {

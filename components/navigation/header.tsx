@@ -181,7 +181,7 @@ export function Header() {
             Locations
           </Link>
           <Link
-            href="/employers"
+            href="/for-employers"
             className="text-sm font-medium leading-6 text-aim-slate hover:text-aim-teal transition-colors whitespace-nowrap"
           >
             For Employers
@@ -433,7 +433,7 @@ export function Header() {
                     Locations
                   </Link>
                   <Link
-                    href="/employers"
+                    href="/for-employers"
                     className="-mx-3 block rounded-lg px-3 py-3 text-base font-semibold leading-6 text-gray-900 hover:bg-gray-50"
                     onClick={() => setMobileMenuOpen(false)}
                   >
