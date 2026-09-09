@@ -2,6 +2,7 @@ import { buildMetadata } from '@/lib/seo';
 import { HeroBlock } from '@/components/blocks/hero-block';
 import { Section, Prose, FeatureList } from '@/components/blocks/section';
 import { CtaStrip } from '@/components/blocks/cta-strip';
+import { ContactLeadForm } from '@/components/contact/contact-lead-form';
 import Link from 'next/link';
 
 export const metadata = buildMetadata({
@@ -10,7 +11,11 @@ export const metadata = buildMetadata({
   path: '/contact',
 });
 
-export default function ContactPage() {
+export default function ContactPage({
+  searchParams,
+}: {
+  searchParams?: { interest?: string };
+}) {
   return (
     <>
       <HeroBlock
@@ -34,90 +39,7 @@ export default function ContactPage() {
 
       <Section heading="Contact Form" subheading="Tell us what you need and we'll get back to you within 24 hours">
         <div className="mx-auto max-w-2xl">
-          <form className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div>
-                <label htmlFor="name" className="block text-sm font-semibold text-aim-navy">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  className="mt-2 w-full rounded-lg border border-aim-divider-gray bg-white px-4 py-2.5 text-aim-navy placeholder-aim-slate/50 focus:border-aim-teal focus:outline-none focus:ring-1 focus:ring-aim-teal"
-                  placeholder="Your name"
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-aim-navy">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  className="mt-2 w-full rounded-lg border border-aim-divider-gray bg-white px-4 py-2.5 text-aim-navy placeholder-aim-slate/50 focus:border-aim-teal focus:outline-none focus:ring-1 focus:ring-aim-teal"
-                  placeholder="your@email.com"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="phone" className="block text-sm font-semibold text-aim-navy">
-                Phone
-              </label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                className="mt-2 w-full rounded-lg border border-aim-divider-gray bg-white px-4 py-2.5 text-aim-navy placeholder-aim-slate/50 focus:border-aim-teal focus:outline-none focus:ring-1 focus:ring-aim-teal"
-                placeholder="(780) 123-4567"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="interest" className="block text-sm font-semibold text-aim-navy">
-                What's This About?
-              </label>
-              <select
-                id="interest"
-                name="interest"
-                className="mt-2 w-full rounded-lg border border-aim-divider-gray bg-white px-4 py-2.5 text-aim-navy focus:border-aim-teal focus:outline-none focus:ring-1 focus:ring-aim-teal"
-              >
-                <option value="">Select an option</option>
-                <option value="patient">Patient Booking</option>
-                <option value="referral">Healthcare Referral</option>
-                <option value="employer">Employer Inquiry</option>
-                <option value="legal">Legal Referral</option>
-                <option value="partnerships">Partnership Inquiry</option>
-                <option value="careers">Career Opportunity</option>
-                <option value="general">General Question</option>
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="message" className="block text-sm font-semibold text-aim-navy">
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                required
-                rows={5}
-                className="mt-2 w-full rounded-lg border border-aim-divider-gray bg-white px-4 py-2.5 text-aim-navy placeholder-aim-slate/50 focus:border-aim-teal focus:outline-none focus:ring-1 focus:ring-aim-teal"
-                placeholder="Tell us what you need..."
-              ></textarea>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-aim-teal px-6 py-3 text-center font-semibold text-white transition hover:bg-aim-teal/90 focus:outline-none focus:ring-2 focus:ring-aim-teal focus:ring-offset-2"
-            >
-              Send Message
-            </button>
-          </form>
+          <ContactLeadForm initialInterest={searchParams?.interest} />
         </div>
       </Section>
 

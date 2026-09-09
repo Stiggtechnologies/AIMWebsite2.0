@@ -1,7 +1,7 @@
 import type { PartnerInquiry } from '@/lib/partner-inquiry';
 import { notificationTitleForPartner } from '@/lib/partner-inquiry';
 
-const DEFAULT_CLINIC_MAILBOX = 'info@albertainjurymanagement.ca';
+const DEFAULT_CLINIC_MAILBOX = 'aim2recover@albertainjurymanagement.ca';
 
 function escapeHtml(value: string): string {
   return value
@@ -17,8 +17,8 @@ function label(value?: string | null): string {
 }
 
 function recipients(): string[] {
-  const configured = process.env.PARTNER_INQUIRY_NOTIFICATION_EMAIL
-    || process.env.CLINIC_NOTIFICATION_EMAIL
+  const configured = process.env.CLINIC_NOTIFICATION_EMAIL
+    || process.env.PARTNER_INQUIRY_NOTIFICATION_EMAIL
     || process.env.AIM_PERFORMANCE_ADMIN_EMAIL
     || DEFAULT_CLINIC_MAILBOX;
 
