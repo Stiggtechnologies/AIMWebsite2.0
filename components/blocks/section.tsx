@@ -20,7 +20,7 @@ export function Section({
   id?: string;
 }) {
   return (
-    <section id={id} className={`${muted ? 'bg-aim-off-white' : 'bg-white'} py-16 md:py-20 ${className}`}>
+    <section id={id} className={`${muted ? 'bg-aim-off-white' : 'bg-white'} ${id ? 'scroll-mt-28' : ''} py-16 md:py-20 ${className}`}>
       <div className="mx-auto max-w-6xl px-6 md:px-8">
         {(eyebrow || heading || subheading) && (
           <div className={`mb-12 ${center ? 'mx-auto max-w-3xl text-center' : 'max-w-3xl'}`}>

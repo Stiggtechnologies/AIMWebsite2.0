@@ -127,8 +127,18 @@ export function Footer() {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/employers" className="text-sm leading-6 text-gray-300 hover:text-aim-teal transition-colors">
+                    <Link href="/for-employers" className="text-sm leading-6 text-gray-300 hover:text-aim-teal transition-colors">
                       For Employers
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/for-referrers" className="text-sm leading-6 text-gray-300 hover:text-aim-teal transition-colors">
+                      For Healthcare Referrers
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/for-lawyers" className="text-sm leading-6 text-gray-300 hover:text-aim-teal transition-colors">
+                      For Law Firms
                     </Link>
                   </li>
                   <li>

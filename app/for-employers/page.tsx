@@ -2,113 +2,129 @@ import { buildMetadata } from '@/lib/seo';
 import { HeroBlock } from '@/components/blocks/hero-block';
 import { Section, FeatureList, Prose } from '@/components/blocks/section';
 import { CtaStrip } from '@/components/blocks/cta-strip';
+import { PartnerInquiryForm } from '@/components/partners/partner-inquiry-form';
 
 export const metadata = buildMetadata({
-  title: 'For Employers',
-  description: 'Workplace injury management and rehabilitation services for Alberta employers. Injury triage, ergonomic assessments, return-to-work programs, and more.',
+  title: 'Workplace Injury & Return-to-Work Services for Alberta Employers',
+  description: 'Rapid-access injury rehabilitation, return-to-work coordination, onsite services and remote employer support across Alberta.',
   path: '/for-employers',
 });
+
+const footprint = [
+  {
+    title: 'Clinic-based care',
+    detail: 'Physiotherapy, chiropractic care and clinically indicated services at AIM’s Edmonton clinic for workers in Edmonton and surrounding communities.',
+  },
+  {
+    title: 'Greater Edmonton onsite',
+    detail: 'Workplace education, ergonomic support and agreed onsite services in Edmonton, Nisku/Leduc, Sherwood Park, Beaumont and St. Albert.',
+  },
+  {
+    title: 'Alberta-wide support',
+    detail: 'Remote return-to-work coordination and manager education across Alberta, with onsite delivery elsewhere when engagement size and travel are practical.',
+  },
+];
 
 export default function EmployersPage() {
   return (
     <>
       <HeroBlock
-        headline="Workplace Injury Management for Alberta Employers"
-        subheadline="Partner with AIM to reduce injury costs, improve worker safety, and accelerate return-to-work outcomes."
-        primaryCta={{ label: 'Schedule a Consultation', href: '/contact?interest=employer' }}
-        secondaryCta={{ label: 'Learn More', href: '#services' }}
+        eyebrow="For employers, safety teams and disability managers"
+        headline="Keep injured workers connected to safe, productive work"
+        subheadline="A practical Alberta-wide employer pathway combining Edmonton clinical care, regional onsite support and remote return-to-work coordination."
+        primaryCta={{ label: 'Discuss an Employer Program', href: '#partner-inquiry' }}
+        secondaryCta={{ label: 'Call (780) 250-8188', href: 'tel:+17802508188' }}
+        image={{
+          src: '/partners/employer-return-to-work-hero.webp',
+          alt: 'Industrial worker, safety manager and rehabilitation clinician reviewing a return-to-work plan',
+          priority: true,
+        }}
       />
 
-      <Section heading="Who This Is For" subheading="HR leaders, safety managers, and benefits decision-makers" center>
-        <Prose>
-          <p>
-            Whether you're a small business looking to manage occasional workplace injuries or a large organization seeking to reduce workers' compensation costs, AIM provides specialized solutions tailored to your needs.
-          </p>
-        </Prose>
-      </Section>
-
-      <Section heading="How AIM Helps Employers" muted>
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-lg bg-white p-6">
-            <h3 className="mb-3 text-lg font-semibold text-aim-navy">Workplace Injury Triage</h3>
-            <p className="text-aim-slate/85">
-              Fast, expert assessment of workplace injuries to determine severity, treatment needs, and return-to-work timeline. Early intervention prevents complications and long-term disability.
-            </p>
-          </div>
-          <div className="rounded-lg bg-white p-6">
-            <h3 className="mb-3 text-lg font-semibold text-aim-navy">Ergonomic Assessments</h3>
-            <p className="text-aim-slate/85">
-              Evaluate workstations and job tasks to identify injury risks. We recommend modifications and provide staff training to prevent future injuries.
-            </p>
-          </div>
-          <div className="rounded-lg bg-white p-6">
-            <h3 className="mb-3 text-lg font-semibold text-aim-navy">Functional Capacity Evaluations</h3>
-            <p className="text-aim-slate/85">
-              Comprehensive assessment of worker physical abilities compared to job demands. Essential for return-to-work planning and WCB coordination.
-            </p>
-          </div>
-          <div className="rounded-lg bg-white p-6">
-            <h3 className="mb-3 text-lg font-semibold text-aim-navy">Return-to-Work Programs</h3>
-            <p className="text-aim-slate/85">
-              Structured rehabilitation with work conditioning and gradual duty progression. We coordinate with workers and WCB to achieve timely, sustainable return-to-work.
-            </p>
-          </div>
-          <div className="rounded-lg bg-white p-6">
-            <h3 className="mb-3 text-lg font-semibold text-aim-navy">Early Intervention</h3>
-            <p className="text-aim-slate/85">
-              Prompt treatment of workplace injuries reduces severity, prevents chronic problems, and shortens recovery timelines. We prioritize injured workers quickly.
-            </p>
-          </div>
-          <div className="rounded-lg bg-white p-6">
-            <h3 className="mb-3 text-lg font-semibold text-aim-navy">WCB Coordination</h3>
-            <p className="text-aim-slate/85">
-              Expert navigation of WorkSafeBC claims. We communicate with WCB and your organization to ensure proper documentation, claim management, and claim resolution.
-            </p>
-          </div>
+      <Section
+        heading="One employer relationship, the right delivery model"
+        subheading="The program footprint expands without overpromising travel or clinical availability"
+        center
+      >
+        <div className="grid gap-5 md:grid-cols-3">
+          {footprint.map((item) => (
+            <article key={item.title} className="rounded-2xl border border-aim-divider-gray/60 bg-white p-6 text-left shadow-sm">
+              <h3 className="text-lg font-semibold text-aim-navy">{item.title}</h3>
+              <p className="mt-3 text-sm leading-6 text-aim-slate/80">{item.detail}</p>
+            </article>
+          ))}
         </div>
       </Section>
 
-      <Section heading="Partnership Workflow" subheading="How we work together to achieve your goals" center>
+      <Section heading="The AIM Rapid Recovery & Return-to-Work pathway" muted>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[
+            ['Rapid access', 'Priority assessment targets can be established with the employer, subject to clinical capacity and the appropriate payer or WCB process.'],
+            ['Functional communication', 'With appropriate authority or consent, stakeholders receive practical information about abilities, restrictions and next steps—not unnecessary clinical details.'],
+            ['Modified-work support', 'Clinicians can support suitable, progressive duties based on the worker’s presentation, job demands and applicable program requirements.'],
+            ['WCB coordination', 'AIM supports Alberta WCB reporting, treatment and return-to-work workflows within the provider’s role and current WCB requirements.'],
+            ['Onsite prevention', 'Paid ergonomic, job-demand and workforce education services can be scoped for the organization and delivered where practical.'],
+            ['Measured service', 'AIM OS tracks inquiry source, response, booking and attendance. Practice Perfect confirms visits and collected revenue.'],
+          ].map(([title, detail]) => (
+            <article key={title} className="rounded-xl border border-aim-divider-gray/50 bg-white p-6">
+              <h3 className="text-lg font-semibold text-aim-navy">{title}</h3>
+              <p className="mt-3 text-sm leading-6 text-aim-slate/80">{detail}</p>
+            </article>
+          ))}
+        </div>
+      </Section>
+
+      <Section heading="A straightforward operating workflow" subheading="Built for HR, safety and WCB coordinators">
+        <div className="grid gap-5 md:grid-cols-4">
+          {[
+            ['1', 'Set up', 'Agree on contacts, service area, payer processes and response expectations.'],
+            ['2', 'Refer', 'The worker uses the approved clinic pathway; private health information is not sent through this public form.'],
+            ['3', 'Coordinate', 'AIM provides authorized functional updates and supports an appropriate return-to-work plan.'],
+            ['4', 'Review', 'The employer receives aggregate service measures without patient-level health information.'],
+          ].map(([number, title, detail]) => (
+            <article key={number} className="rounded-xl bg-aim-steel-blue/55 p-5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-aim-navy font-bold text-white">{number}</div>
+              <h3 className="mt-4 font-semibold text-aim-navy">{title}</h3>
+              <p className="mt-2 text-sm leading-6 text-aim-slate/80">{detail}</p>
+            </article>
+          ))}
+        </div>
+      </Section>
+
+      <Section heading="What AIM measures" muted>
+        <FeatureList
+          items={[
+            'Time from inquiry or referral to first contact',
+            'Booked and attended first appointments',
+            'Service line and payer pathway',
+            'No-show and cancellation rate',
+            'Collected revenue and accounts-receivable age',
+            'Return-to-work milestones reported only in appropriate aggregate or authorized form',
+          ]}
+          columns={2}
+        />
         <Prose>
           <p>
-            <strong>Step 1: Assessment</strong> — When a workplace injury occurs, your employee contacts us for rapid assessment and treatment initiation.
-          </p>
-          <p>
-            <strong>Step 2: Coordination</strong> — We communicate with you, the worker, and WCB to ensure alignment on the rehabilitation plan and return-to-work timeline.
-          </p>
-          <p>
-            <strong>Step 3: Treatment & Monitoring</strong> — Specialized treatment is provided with regular progress reporting to all stakeholders.
-          </p>
-          <p>
-            <strong>Step 4: Return-to-Work</strong> — We guide workers through gradual duty progression and work conditioning to achieve sustainable return-to-work.
-          </p>
-          <p>
-            <strong>Step 5: Prevention</strong> — We identify injury risks through ergonomic assessment and provide recommendations to prevent future incidents.
+            AIM does not promise a particular recovery date, claim result or premium reduction. The program is designed to improve access, coordination and measurement while preserving clinical independence and worker choice.
           </p>
         </Prose>
       </Section>
 
-      <Section heading="Key Benefits for Your Organization" muted>
-        <FeatureList
-          items={[
-            'Reduced worker compensation insurance premiums through better injury management',
-            'Faster return-to-work timelines and reduced lost-time claims',
-            'Improved employee morale and retention through responsive injury care',
-            'Expert WCB coordination reducing claim complications',
-            'Ergonomic expertise reducing future injury risk',
-            'Detailed documentation supporting claims and preventing disputes',
-            'Direct communication and transparent reporting',
-            'Flexible programs scaled to your organization\'s size and needs',
-          ]}
-          columns={2}
-        />
+      <Section
+        id="partner-inquiry"
+        heading="Build the right employer pathway"
+        subheading="Start with the organization—not an individual worker’s medical information"
+      >
+        <div className="mx-auto max-w-3xl">
+          <PartnerInquiryForm category="employer" />
+        </div>
       </Section>
 
       <CtaStrip
-        headline="Ready to Transform Workplace Injury Management?"
-        subheadline="Schedule a consultation to discuss how AIM can help your organization reduce injury costs and support worker recovery."
-        primaryCta={{ label: 'Schedule Consultation', href: '/contact?interest=employer' }}
-        secondaryCta={{ label: 'Contact Us', href: '/contact' }}
+        headline="A workplace injury should not become an administrative maze"
+        subheadline="Call AIM to discuss rapid access, return-to-work coordination or a regional employer program."
+        primaryCta={{ label: 'Call (780) 250-8188', href: 'tel:+17802508188' }}
+        secondaryCta={{ label: 'Review WCB Services', href: '/services/wcb-rehabilitation' }}
       />
     </>
   );
