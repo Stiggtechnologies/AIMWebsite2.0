@@ -9,10 +9,11 @@ import { JsonLd, faqSchema } from '@/lib/seo';
 
 export function ServicePage({ service }: { service: Service }) {
   const locationsOffering = locations.filter((l) => l.services.includes(service.slug));
-  const bookingHref = service.slug === 'chiropractic-care'
+  const usesQuickIntake = ['chiropractic-care', 'manual-osteopathy', 'orthotics'].includes(service.slug);
+  const bookingHref = usesQuickIntake
     ? `/intake/form?service=${service.slug}`
     : `/book?service=${service.slug}`;
-  const bookingLabel = service.slug === 'chiropractic-care' ? 'Request an Appointment' : 'Book Now';
+  const bookingLabel = usesQuickIntake ? 'Request an Appointment' : 'Book Now';
   return (
     <>
       <JsonLd data={faqSchema(service.faqs)} />
