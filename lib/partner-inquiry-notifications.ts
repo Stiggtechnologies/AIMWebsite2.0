@@ -1,7 +1,6 @@
 import type { PartnerInquiry } from '@/lib/partner-inquiry';
 import { notificationTitleForPartner } from '@/lib/partner-inquiry';
-
-const DEFAULT_CLINIC_MAILBOX = 'aim2recover@albertainjurymanagement.ca';
+import { clinicMailboxRecipients, sendClinicEmail } from '@/lib/clinic-email';
 
 function escapeHtml(value: string): string {
   return value
@@ -16,39 +15,20 @@ function label(value?: string | null): string {
   return value?.trim() || 'Not provided';
 }
 
-function recipients(): string[] {
-  const configured = process.env.CLINIC_NOTIFICATION_EMAIL
-    || process.env.PARTNER_INQUIRY_NOTIFICATION_EMAIL
-    || process.env.AIM_PERFORMANCE_ADMIN_EMAIL
-    || DEFAULT_CLINIC_MAILBOX;
-
-  return configured
-    .split(',')
-    .map((email) => email.trim())
-    .filter(Boolean);
-}
-
 export async function emailClinicPartnerInquiry(
   inquiry: PartnerInquiry,
   reference: string,
 ): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    console.error('Partner inquiry email not sent: RESEND_API_KEY is not configured');
-    return;
-  }
-
-  const to = recipients();
+  const to = clinicMailboxRecipients(
+    process.env.CLINIC_NOTIFICATION_EMAIL
+      || process.env.PARTNER_INQUIRY_NOTIFICATION_EMAIL,
+  );
   if (to.length === 0) {
     console.error('Partner inquiry email not sent: clinic mailbox is not configured');
     return;
   }
 
   const title = notificationTitleForPartner(inquiry.category);
-  const from = process.env.PARTNER_INQUIRY_NOTIFICATION_FROM
-    || process.env.AIM_PERFORMANCE_NOTIFICATION_FROM
-    || 'AIM Website <noreply@aimphysiotherapy.ca>';
-
   const rows = [
     ['AIM OS reference', reference],
     ['Contact', `${inquiry.first_name} ${inquiry.last_name}`],
@@ -71,18 +51,12 @@ export async function emailClinicPartnerInquiry(
     ].filter(Boolean).join(' · ') || 'Direct / not provided'],
   ];
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from,
-      to,
-      reply_to: inquiry.email,
-      subject: `${title} — ${inquiry.organization} — ${reference}`,
-      html: `<!doctype html>
+  await sendClinicEmail({
+    to,
+    from: process.env.PARTNER_INQUIRY_NOTIFICATION_FROM,
+    replyTo: inquiry.email,
+    subject: `${title} — ${inquiry.organization} — ${reference}`,
+    html: `<!doctype html>
 <html><body style="margin:0;padding:24px;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#0f2a44">
   <div style="max-width:680px;margin:0 auto;overflow:hidden;border:1px solid #dbe4ea;border-radius:14px;background:#fff">
     <div style="padding:22px 28px;background:#0f2a44;color:#fff">
@@ -98,11 +72,5 @@ export async function emailClinicPartnerInquiry(
     </div>
   </div>
 </body></html>`,
-    }),
   });
-
-  if (!response.ok) {
-    const detail = await response.text().catch(() => '');
-    throw new Error(`Resend ${response.status}: ${detail}`);
-  }
 }

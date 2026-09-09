@@ -5,7 +5,10 @@ import {
   contactLeadSchema,
   contactLeadSourceSlug,
 } from './contact-lead.ts';
-import { clinicMailboxRecipients, DEFAULT_CLINIC_MAILBOX } from './clinic-lead-notifications.ts';
+import {
+  clinicMailboxRecipients,
+  DEFAULT_CLINIC_NOTIFICATION_ADDRESS,
+} from './clinic-email.ts';
 
 describe('website contact lead routing', () => {
   it('requires contact consent and accepts a clean routing-only message', () => {
@@ -29,10 +32,10 @@ describe('website contact lead routing', () => {
     assert.equal(contactFunnelType('legal'), 'partner_legal');
   });
 
-  it('defaults every clinic lead email to the approved clinic mailbox', () => {
-    assert.equal(DEFAULT_CLINIC_MAILBOX, 'aim2recover@albertainjurymanagement.ca');
-    assert.deepEqual(clinicMailboxRecipients(DEFAULT_CLINIC_MAILBOX), [
-      'aim2recover@albertainjurymanagement.ca',
+  it('defaults every clinic lead email to the forwarding mailbox', () => {
+    assert.equal(DEFAULT_CLINIC_NOTIFICATION_ADDRESS, 'websiteleads@aimphysiotherapy.ca');
+    assert.deepEqual(clinicMailboxRecipients(DEFAULT_CLINIC_NOTIFICATION_ADDRESS), [
+      'websiteleads@aimphysiotherapy.ca',
     ]);
   });
 });

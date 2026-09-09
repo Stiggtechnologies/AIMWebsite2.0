@@ -2,13 +2,11 @@
  * Server-only notification fan-out for AIM Performance lead-form submissions.
  *
  * Used by `app/api/aim-performance/leads/route.ts` after a successful
- * Supabase insert. Every channel is env-var-gated so this is safe to
- * ship before any of the providers are configured — missing config
- * results in a silent no-op, not an error.
+ * Supabase insert. Email uses AIM's authenticated MochaHost mailbox.
+ * Other channels remain env-var-gated.
  *
  * Channels:
- *   1. Email      — implemented via Resend REST API. Active when
- *                   RESEND_API_KEY + AIM_PERFORMANCE_ADMIN_EMAIL are set.
+ *   1. Email      — authenticated SMTP through websiteleads@aimphysiotherapy.ca.
  *   2. SMS        — TODO (e.g. Twilio). Active when the env vars below
  *                   are set; high-intent triggers documented inline.
  *   3. CRM task   — TODO (HubSpot or GoHighLevel). Active when API key
@@ -18,9 +16,11 @@
  * `source: "AIM Performance South Common Launch"` so leads can be
  * filtered downstream regardless of channel.
  *
- * SECURITY: never import this file from a client component. The Resend
- * key, future Twilio creds, and future HubSpot/GHL keys are server-only.
+ * SECURITY: never import this file from a client component. SMTP and
+ * future provider credentials are server-only.
  */
+
+import { clinicMailboxRecipients, sendClinicEmail } from '@/lib/clinic-email';
 
 const SOURCE_ATTRIBUTION = 'AIM Performance South Common Launch';
 const HIGH_INTENT_INTERESTS = new Set([
@@ -71,52 +71,26 @@ export async function notifyAdminOnLead(lead: LeadNotificationPayload): Promise<
 }
 
 // ---------------------------------------------------------------------------
-// 1. Email — Resend (real implementation, env-gated)
+// 1. Email — authenticated AIM mailbox SMTP
 // ---------------------------------------------------------------------------
 
 async function sendAdminEmail(
   lead: LeadNotificationPayload,
   isHighIntent: boolean
 ): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const toRaw = process.env.AIM_PERFORMANCE_ADMIN_EMAIL;
-  const from =
-    process.env.AIM_PERFORMANCE_NOTIFICATION_FROM ||
-    'AIM Performance <noreply@aimphysiotherapy.ca>';
-
-  if (!apiKey || !toRaw) return; // not configured — silent no-op
-
-  // `AIM_PERFORMANCE_ADMIN_EMAIL` accepts a comma-separated list so leads
-  // can fan out to multiple admin inboxes (e.g. an albertainjurymanagement.ca
-  // address and an aimphysiotherapy.ca address for redundancy). Resend's
-  // `to` field accepts an array directly.
-  const recipients = toRaw
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
+  const recipients = clinicMailboxRecipients();
   if (recipients.length === 0) return;
 
   const fullName = [lead.first_name, lead.last_name].filter(Boolean).join(' ');
   const subject = `${isHighIntent ? '🔥 ' : ''}New AIM Performance lead — ${fullName}`;
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from,
-      to: recipients,
-      subject,
-      html: buildEmailHtml(lead, isHighIntent),
-    }),
+  await sendClinicEmail({
+    to: recipients,
+    from: process.env.AIM_PERFORMANCE_NOTIFICATION_FROM,
+    replyTo: lead.email,
+    subject,
+    html: buildEmailHtml(lead, isHighIntent),
   });
-
-  if (!response.ok) {
-    const text = await response.text().catch(() => '');
-    throw new Error(`Resend ${response.status}: ${text}`);
-  }
 }
 
 function buildEmailHtml(lead: LeadNotificationPayload, isHighIntent: boolean): string {
