@@ -1,6 +1,12 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import {
+  clinicMailboxRecipients,
+  DEFAULT_CLINIC_NOTIFICATION_ADDRESS,
+  sendClinicEmail,
+} from '@/lib/clinic-email';
 
-export const DEFAULT_CLINIC_MAILBOX = 'aim2recover@albertainjurymanagement.ca';
+export const DEFAULT_CLINIC_MAILBOX = DEFAULT_CLINIC_NOTIFICATION_ADDRESS;
+export { clinicMailboxRecipients } from '@/lib/clinic-email';
 
 const RESPONSIBLE_ROLES = ['clinic_manager'];
 const FALLBACK_ROLES = ['admin', 'executive'];
@@ -27,17 +33,6 @@ function escapeHtml(value: string): string {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
-}
-
-export function clinicMailboxRecipients(
-  configured = process.env.CLINIC_NOTIFICATION_EMAIL
-    || process.env.AIM_PERFORMANCE_ADMIN_EMAIL
-    || DEFAULT_CLINIC_MAILBOX,
-): string[] {
-  return configured
-    .split(',')
-    .map((email) => email.trim())
-    .filter(Boolean);
 }
 
 async function findNotificationRecipients(
@@ -99,15 +94,6 @@ async function findNotificationRecipients(
 }
 
 async function sendClinicMailboxEmail(lead: ClinicLeadNotification): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) throw new Error('RESEND_API_KEY is not configured');
-
-  const to = clinicMailboxRecipients();
-  if (to.length === 0) throw new Error('Clinic mailbox is not configured');
-
-  const from = process.env.CLINIC_NOTIFICATION_FROM
-    || process.env.AIM_PERFORMANCE_NOTIFICATION_FROM
-    || 'AIM Website <noreply@aimphysiotherapy.ca>';
   const rows = [
     ['AIM OS reference', lead.reference],
     ['Contact', lead.name],
@@ -118,18 +104,11 @@ async function sendClinicMailboxEmail(lead: ClinicLeadNotification): Promise<voi
     ['Source', lead.source || 'Website'],
   ];
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from,
-      to,
-      ...(lead.replyTo ? { reply_to: lead.replyTo } : {}),
-      subject: `${lead.title} — ${lead.reference}`,
-      html: `<!doctype html>
+  await sendClinicEmail({
+    to: clinicMailboxRecipients(),
+    replyTo: lead.replyTo,
+    subject: `${lead.title} — ${lead.reference}`,
+    html: `<!doctype html>
 <html><body style="margin:0;padding:24px;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#0f2a44">
   <div style="max-width:680px;margin:0 auto;overflow:hidden;border:1px solid #dbe4ea;border-radius:14px;background:#fff">
     <div style="padding:22px 28px;background:#0f2a44;color:#fff">
@@ -145,13 +124,7 @@ async function sendClinicMailboxEmail(lead: ClinicLeadNotification): Promise<voi
     </div>
   </div>
 </body></html>`,
-    }),
   });
-
-  if (!response.ok) {
-    const detail = await response.text().catch(() => '');
-    throw new Error(`Resend ${response.status}: ${detail}`);
-  }
 }
 
 export async function notifyClinicAboutLead(
