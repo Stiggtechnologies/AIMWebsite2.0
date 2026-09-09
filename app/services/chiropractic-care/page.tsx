@@ -6,8 +6,8 @@ import { notFound } from 'next/navigation';
 const SLUG = 'chiropractic-care';
 
 export const metadata = buildMetadata({
-  title: 'Chiropractic Care',
-  description: 'Exercise-forward chiropractic care for spinal mobility, joint function, and pain reduction. Integrated with physio and massage therapy.',
+  title: 'Chiropractic Care in Edmonton',
+  description: 'Dr. Ramadan Hochaimi, D.C. is now accepting new chiropractic patients at AIM Edmonton Main Hub. Call or complete the intake form to request an appointment.',
   path: `/services/${SLUG}`,
 });
 

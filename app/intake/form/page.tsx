@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { useTracking } from '@/components/providers/tracking-provider';
 import { bookableLocations } from '@/lib/content/locations';
+import { getUtmsForPayload } from '@/lib/utm';
 
 const BOOKABLE = bookableLocations();
 const LOCATION_SLUGS = BOOKABLE.map((l) => l.slug) as [string, ...string[]];
@@ -19,6 +21,7 @@ const DEFAULT_LOCATION = LOCATION_SLUGS[0];
 const QuickIntakeSchema = z.object({
   full_name: z.string().min(3),
   phone: z.string().min(10),
+  service_interest: z.enum(['chiropractic-care', 'physiotherapy', 'massage-therapy', 'orthotics', 'manual-osteopathy', 'other']),
   issue_type: z.enum(['work_injury', 'mva', 'sports', 'chronic_pain', 'other']),
   location: z.enum(LOCATION_SLUGS),
   consent_privacy: z.literal(true),
@@ -38,10 +41,16 @@ function issueTypeToInsurance(issueType: z.infer<typeof QuickIntakeSchema>['issu
 
 export default function QuickIntakeFormPage() {
   const { sessionId, trackFormStart, trackFormSubmit } = useTracking();
+  const searchParams = useSearchParams();
+  const requestedService = searchParams.get('service');
+  const initialService = QuickIntakeSchema.shape.service_interest.safeParse(requestedService).success
+    ? requestedService as z.infer<typeof QuickIntakeSchema>['service_interest']
+    : 'other';
 
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
-  const [issueType, setIssueType] = useState<z.infer<typeof QuickIntakeSchema>['issue_type']>('work_injury');
+  const [serviceInterest, setServiceInterest] = useState<z.infer<typeof QuickIntakeSchema>['service_interest']>(initialService);
+  const [issueType, setIssueType] = useState<z.infer<typeof QuickIntakeSchema>['issue_type']>('other');
   const [location, setLocation] = useState<string>(DEFAULT_LOCATION);
   const [consentPrivacy, setConsentPrivacy] = useState(true);
   const [consentCommunication, setConsentCommunication] = useState(true);
@@ -60,6 +69,7 @@ export default function QuickIntakeFormPage() {
     const parsed = QuickIntakeSchema.safeParse({
       full_name: fullName.trim(),
       phone: phone.trim(),
+      service_interest: serviceInterest,
       issue_type: issueType,
       location,
       consent_privacy: consentPrivacy,
@@ -87,6 +97,7 @@ export default function QuickIntakeFormPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          ...getUtmsForPayload(),
           session_id: sessionId,
           patient_data: {
             first_name: firstName,
@@ -95,6 +106,7 @@ export default function QuickIntakeFormPage() {
             preferred_location: location,
           },
           injury_data: { injury_type: issueType },
+          program_interest: serviceInterest,
           insurance_data: { insurance_type: issueTypeToInsurance(issueType) },
           medical_history: {}, // intentionally not collected here
           consent_data: {
@@ -186,6 +198,23 @@ export default function QuickIntakeFormPage() {
             </div>
 
             <div className="space-y-2">
+              <Label htmlFor="serviceInterest">Service requested</Label>
+              <select
+                id="serviceInterest"
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                value={serviceInterest}
+                onChange={(e) => setServiceInterest(e.target.value as z.infer<typeof QuickIntakeSchema>['service_interest'])}
+              >
+                <option value="chiropractic-care">Chiropractic care</option>
+                <option value="physiotherapy">Physiotherapy</option>
+                <option value="massage-therapy">Massage therapy</option>
+                <option value="orthotics">Orthotics</option>
+                <option value="manual-osteopathy">Manual osteopathy</option>
+                <option value="other">Not sure / other</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="issueType">What brings you in?</Label>
               <select
                 id="issueType"
@@ -193,11 +222,11 @@ export default function QuickIntakeFormPage() {
                 value={issueType}
                 onChange={(e) => setIssueType(e.target.value as any)}
               >
+                <option value="other">General concern / not sure</option>
                 <option value="work_injury">Work injury (WCB)</option>
                 <option value="mva">Motor vehicle accident (MVA)</option>
                 <option value="sports">Sports / athletic</option>
                 <option value="chronic_pain">Chronic pain</option>
-                <option value="other">Other</option>
               </select>
             </div>
 

@@ -189,13 +189,14 @@ export const services: Service[] = [
   {
     slug: 'chiropractic-care',
     name: 'Chiropractic Care',
-    shortDescription: 'Hands-on care to support mobility, joint function, pain reduction, and movement quality.',
-    positioning: 'Evidence-informed chiropractic care integrated with rehabilitation — because joint care works better alongside exercise and movement.',
+    shortDescription: 'Dr. Ramadan Hochaimi, D.C. is now accepting new chiropractic patients at AIM Edmonton Main Hub.',
+    positioning: 'Now accepting new patients with Dr. Ramadan Hochaimi, D.C. at AIM Edmonton Main Hub. Care is assessment-led and may combine hands-on treatment, exercise, and movement guidance based on your needs.',
     helps: ['Neck and back pain', 'Joint stiffness', 'Headaches', 'Mobility restrictions', 'Posture-related complaints'],
     treatmentMay: ['Spinal assessment', 'Joint manipulation and mobilization', 'Soft tissue therapy', 'Rehabilitation exercise', 'Ergonomic guidance'],
     whoFor: ['Adults with recurring back or neck issues', 'Patients combining chiro with physio or massage', 'Active individuals maintaining mobility'],
-    whyAim: ['Chiros who work alongside physios and RMTs, not in isolation', 'Exercise-forward approach', 'Clear treatment plans, not unlimited visits'],
+    whyAim: ['Coordinated care alongside physiotherapy and massage therapy when appropriate', 'Assessment-led, evidence-informed approach', 'Treatment plans based on clinical findings and patient goals', 'Direct billing where supported by your benefits plan'],
     faqs: [
+      { q: 'Who provides chiropractic care at AIM?', a: 'Dr. Ramadan Hochaimi, D.C. provides chiropractic care at AIM Edmonton Main Hub and is accepting new patients.' },
       { q: 'Is chiropractic care covered by insurance?', a: 'Most extended health plans cover chiropractic care. We direct bill where possible.' },
       { q: 'Do I need X-rays first?', a: 'Not routinely. Your chiropractor will recommend imaging only if clinically indicated.' },
     ],
