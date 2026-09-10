@@ -1,34 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { WebhookPayload } from '@/lib/aim-os';
+import { verifyAimosWebhookSignature } from '@/lib/aimos-webhook';
+import { notifyClinicAboutLead } from '@/lib/clinic-lead-notifications';
 import { supabase } from '@/lib/supabase';
-import crypto from 'crypto';
-
-function verifyWebhookSignature(payload: string, signature: string | null): boolean {
-  if (!signature) return false;
-
-  const secret = process.env.AIM_OS_WEBHOOK_SECRET;
-  if (!secret) {
-    console.warn('AIM_OS_WEBHOOK_SECRET not configured');
-    return false;
-  }
-
-  const expectedSignature = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex');
-
-  return crypto.timingSafeEqual(
-    Buffer.from(signature),
-    Buffer.from(expectedSignature)
-  );
-}
 
 export async function POST(request: NextRequest) {
   try {
     const signature = request.headers.get('x-aimos-signature');
     const payload = await request.text();
 
-    if (!verifyWebhookSignature(payload, signature)) {
+    if (!verifyAimosWebhookSignature(
+      payload,
+      signature,
+      process.env.AIM_OS_WEBHOOK_SECRET,
+    )) {
       console.error('Invalid webhook signature');
       return NextResponse.json(
         { error: 'Invalid signature' },
@@ -42,8 +27,11 @@ export async function POST(request: NextRequest) {
       case 'intake_status_update':
         await handleIntakeStatusUpdate(body);
         break;
+      case 'lead_created':
+        await handleLeadCreated(body.lead_id);
+        break;
       default:
-        console.warn('Unknown webhook type:', body.type);
+        console.warn('Unknown webhook type');
     }
 
     return NextResponse.json({ status: 'ok' });
@@ -56,7 +44,57 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleIntakeStatusUpdate(payload: WebhookPayload): Promise<void> {
+async function handleLeadCreated(leadId: string): Promise<void> {
+  if (!leadId) throw new Error('lead_id is required');
+
+  const { data: lead, error } = await supabase
+    .from('crm_leads')
+    .select(`
+      id, external_id, clinic_id, first_name, last_name, email, phone,
+      channel_source, funnel_type,
+      service_line:crm_service_lines(name, slug),
+      lead_source:crm_lead_sources(name, slug)
+    `)
+    .eq('id', leadId)
+    .single();
+
+  if (error || !lead) {
+    console.error('AIM OS lead lookup failed:', error);
+    throw new Error('Lead not found');
+  }
+  if (!lead.clinic_id) throw new Error('Lead has no clinic assignment');
+
+  const serviceLine = Array.isArray(lead.service_line)
+    ? lead.service_line[0]
+    : lead.service_line;
+  const leadSource = Array.isArray(lead.lead_source)
+    ? lead.lead_source[0]
+    : lead.lead_source;
+  const source = leadSource?.name || lead.channel_source || 'AIM OS';
+  const reference = lead.external_id || `AIM-${lead.id.slice(0, 8).toUpperCase()}`;
+  const result = await notifyClinicAboutLead(supabase, {
+    clinicId: lead.clinic_id,
+    leadId: lead.id,
+    reference,
+    title: `New ${source} lead`,
+    type: 'aimos_lead_created',
+    name: `${lead.first_name} ${lead.last_name}`.trim(),
+    email: lead.email,
+    phone: lead.phone,
+    requestLabel: serviceLine?.name || lead.funnel_type || 'General inquiry',
+    source,
+    location: 'Assigned AIM clinic',
+    replyTo: lead.email,
+  });
+
+  if (!result.mailboxEmailSent) {
+    throw new Error('Clinic mailbox delivery failed');
+  }
+}
+
+async function handleIntakeStatusUpdate(
+  payload: Extract<WebhookPayload, { type: 'intake_status_update' }>,
+): Promise<void> {
   const { intake_id, status } = payload;
 
   const { error } = await supabase
