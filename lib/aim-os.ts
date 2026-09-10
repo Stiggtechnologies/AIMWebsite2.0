@@ -62,11 +62,18 @@ export interface AIContextResponse {
   escalation_rules: string[];
 }
 
-export interface WebhookPayload {
+export interface IntakeStatusWebhookPayload {
   type: 'intake_status_update';
   intake_id: string;
   status: IntakeStatus;
 }
+
+export interface LeadCreatedWebhookPayload {
+  type: 'lead_created';
+  lead_id: string;
+}
+
+export type WebhookPayload = IntakeStatusWebhookPayload | LeadCreatedWebhookPayload;
 
 export class AIMOSClient {
   private apiBase: string;

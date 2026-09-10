@@ -26,6 +26,12 @@ export interface ClinicLeadNotification {
   replyTo?: string | null;
 }
 
+export interface ClinicLeadNotificationResult {
+  mailboxEmailSent: boolean;
+  inAppNotificationsCreated: boolean;
+  activityCreated: boolean;
+}
+
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, '&amp;')
@@ -130,7 +136,7 @@ async function sendClinicMailboxEmail(lead: ClinicLeadNotification): Promise<voi
 export async function notifyClinicAboutLead(
   supabase: SupabaseClient,
   lead: ClinicLeadNotification,
-): Promise<void> {
+): Promise<ClinicLeadNotificationResult> {
   const recipients = await findNotificationRecipients(supabase, lead.clinicId);
 
   const [activityResult, notificationResult, emailResult] = await Promise.all([
@@ -170,4 +176,10 @@ export async function notifyClinicAboutLead(
   if (emailResult.error) {
     console.error('Clinic lead mailbox email failed:', emailResult.error);
   }
+
+  return {
+    mailboxEmailSent: !emailResult.error,
+    inAppNotificationsCreated: !notificationResult.error,
+    activityCreated: !activityResult.error,
+  };
 }
