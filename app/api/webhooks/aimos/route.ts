@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { WebhookPayload } from '@/lib/aim-os';
 import { verifyAimosWebhookSignature } from '@/lib/aimos-webhook';
 import { notifyClinicAboutLead } from '@/lib/clinic-lead-notifications';
-import { supabase } from '@/lib/supabase';
+import { createPrivilegedSupabaseClient } from '@/lib/supabase';
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,6 +46,8 @@ export async function POST(request: NextRequest) {
 
 async function handleLeadCreated(leadId: string): Promise<void> {
   if (!leadId) throw new Error('lead_id is required');
+
+  const supabase = createPrivilegedSupabaseClient();
 
   const { data: lead, error } = await supabase
     .from('crm_leads')
@@ -96,6 +98,7 @@ async function handleIntakeStatusUpdate(
   payload: Extract<WebhookPayload, { type: 'intake_status_update' }>,
 ): Promise<void> {
   const { intake_id, status } = payload;
+  const supabase = createPrivilegedSupabaseClient();
 
   const { error } = await supabase
     .from('intake_submissions')
