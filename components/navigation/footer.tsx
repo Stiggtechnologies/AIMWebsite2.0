@@ -162,6 +162,11 @@ export function Footer() {
                     </Link>
                   </li>
                   <li>
+                    <Link href="/data-deletion" className="text-sm leading-6 text-gray-300 hover:text-aim-teal transition-colors">
+                      Data Deletion
+                    </Link>
+                  </li>
+                  <li>
                     <Link href="/accessibility" className="text-sm leading-6 text-gray-300 hover:text-aim-teal transition-colors">
                       Accessibility
                     </Link>
