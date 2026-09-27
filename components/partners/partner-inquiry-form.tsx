@@ -33,6 +33,13 @@ const INTERESTS: Record<PartnerCategory, FormOption[]> = {
     { value: 'billing-coordination', label: 'Billing and authorization coordination' },
     { value: 'other', label: 'Other legal referral need' },
   ],
+  acquisition: [
+    { value: 'succession', label: 'Owner succession or full sale' },
+    { value: 'growth-partnership', label: 'Growth partnership or partial investment' },
+    { value: 'join-platform', label: 'Join the AIM operating platform' },
+    { value: 'confidential-introduction', label: 'Confidential introductory discussion' },
+    { value: 'other', label: 'Other clinic partnership' },
+  ],
 };
 
 const REGIONS: FormOption[] = [
@@ -64,6 +71,10 @@ const CATEGORY_COPY: Record<PartnerCategory, { title: string; description: strin
   legal: {
     title: 'Discuss legal referral coordination',
     description: 'Use this form for firm-level or process questions. Individual client information must be transferred through an approved secure channel.',
+  },
+  acquisition: {
+    title: 'Start a confidential clinic conversation',
+    description: 'Tell us only about the clinic and your objectives. Do not include patient, employee or transaction-confidential records in this form.',
   },
 };
 

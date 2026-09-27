@@ -2,6 +2,7 @@ import { buildMetadata } from '@/lib/seo';
 import { HeroBlock } from '@/components/blocks/hero-block';
 import { Section, FeatureList, Prose } from '@/components/blocks/section';
 import { CtaStrip } from '@/components/blocks/cta-strip';
+import { PartnerInquiryForm } from '@/components/partners/partner-inquiry-form';
 
 export const metadata = buildMetadata({
   title: 'Partnerships & Acquisition Inquiries',
@@ -15,7 +16,7 @@ export default function PartnershipsPage() {
       <HeroBlock
         headline="Partnerships & Growth Opportunities"
         subheadline="Join us in building Alberta's leading integrated rehabilitation platform."
-        primaryCta={{ label: 'Explore Partnership', href: '/contact?interest=partnerships' }}
+        primaryCta={{ label: 'Explore Partnership', href: '#clinic-partnership-inquiry' }}
         secondaryCta={{ label: 'Contact Us', href: '/contact' }}
       />
 
@@ -104,10 +105,34 @@ export default function PartnershipsPage() {
         </Prose>
       </Section>
 
+      <Section
+        id="clinic-partnership-inquiry"
+        heading="A confidential first step"
+        subheading="AIM evaluates fit before requesting detailed financial, employee or patient information."
+      >
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="space-y-5 text-aim-slate/85">
+            <p>
+              We are building regional density deliberately. A strong partnership should protect patient care and local goodwill while giving the clinic better recruiting, finance, technology, marketing and operational support.
+            </p>
+            <div className="rounded-xl border border-aim-divider-gray/60 bg-aim-steel-blue/45 p-5">
+              <h3 className="font-semibold text-aim-navy">What happens next</h3>
+              <ol className="mt-3 space-y-2 text-sm">
+                <li>1. A confidential introductory conversation.</li>
+                <li>2. Mutual fit review: clinical quality, people, market and owner objectives.</li>
+                <li>3. Structured diligence only after agreement on scope and confidentiality.</li>
+                <li>4. A transition plan with named owners, milestones and measurable integration gates.</li>
+              </ol>
+            </div>
+          </div>
+          <PartnerInquiryForm category="acquisition" />
+        </div>
+      </Section>
+
       <CtaStrip
         headline="Let's Explore Partnership Opportunities"
         subheadline="Contact us to discuss how we can work together to expand quality rehabilitation services in Alberta."
-        primaryCta={{ label: 'Start Conversation', href: '/contact?interest=partnerships' }}
+        primaryCta={{ label: 'Start Conversation', href: '#clinic-partnership-inquiry' }}
         secondaryCta={{ label: 'Contact Us', href: '/contact' }}
       />
     </>
