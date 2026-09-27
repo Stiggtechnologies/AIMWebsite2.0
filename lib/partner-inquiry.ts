@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const partnerCategorySchema = z.enum(['employer', 'healthcare', 'legal']);
+export const partnerCategorySchema = z.enum(['employer', 'healthcare', 'legal', 'acquisition']);
 
 const optionalShortText = z.string().trim().max(200).optional().nullable();
 const optionalUtm = z.string().trim().max(200).optional().nullable();
@@ -36,12 +36,14 @@ export const PARTNER_CATEGORY_LABELS: Record<PartnerCategory, string> = {
   employer: 'Employer / industrial partnership',
   healthcare: 'Healthcare referral relationship',
   legal: 'Legal referral relationship',
+  acquisition: 'Clinic partnership or acquisition',
 };
 
 export const PARTNER_NOTIFICATION_TITLES: Record<PartnerCategory, string> = {
   employer: 'New employer program inquiry',
   healthcare: 'New healthcare referral inquiry',
   legal: 'New legal referral inquiry',
+  acquisition: 'New clinic partnership inquiry',
 };
 
 export function notificationTitleForPartner(category: PartnerCategory): string {
@@ -62,6 +64,7 @@ export function leadSourceSlugForPartner(
   if (attributed === 'linkedin') return 'linkedin';
   if (attributed === 'google' || attributed === 'google_ads') return 'google-ads';
   if (category === 'healthcare') return 'physician-referral';
+  if (category === 'acquisition') return 'website-organic';
   return 'website-organic';
 }
 

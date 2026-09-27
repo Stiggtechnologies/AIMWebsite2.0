@@ -56,6 +56,7 @@ describe('partner inquiry AIM OS classification', () => {
     assert.equal(funnelTypeForPartner('employer'), 'partner_employer');
     assert.equal(funnelTypeForPartner('healthcare'), 'partner_healthcare');
     assert.equal(funnelTypeForPartner('legal'), 'partner_legal');
+    assert.equal(funnelTypeForPartner('acquisition'), 'partner_acquisition');
   });
 
   test('preserves paid-source attribution and defaults healthcare to physician referral', () => {
@@ -63,6 +64,7 @@ describe('partner inquiry AIM OS classification', () => {
     assert.equal(leadSourceSlugForPartner('employer', 'linkedin'), 'linkedin');
     assert.equal(leadSourceSlugForPartner('healthcare'), 'physician-referral');
     assert.equal(leadSourceSlugForPartner('legal'), 'website-organic');
+    assert.equal(notificationTitleForPartner('acquisition'), 'New clinic partnership inquiry');
   });
 
   test('builds a legible reference and notification without clinical detail', () => {
