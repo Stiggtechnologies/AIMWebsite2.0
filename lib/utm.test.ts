@@ -71,7 +71,9 @@ describe('UTM capture', () => {
     // The shape is pinned deliberately: it maps 1:1 onto crm_leads columns, so
     // adding a key here without the matching migration fails the insert at
     // runtime rather than at build time. Click ids were added 2026-10-06
-    // alongside 20261006120000_crm_leads_click_ids.sql.
+    // alongside AIMOS migration
+    // 20261006130000_crm_leads_google_ads_click_conversions.sql, which must be
+    // applied before this ships or the insert fails.
     assert.deepEqual(utmsForCrmInsert({ utm_source: 'google' }), {
       utm_source: 'google',
       utm_medium: null,
