@@ -77,6 +77,7 @@ export default function CareersPage() {
             'Registered Massage Therapists',
             'Clinic Managers',
             'Administrative & Front Desk Staff',
+            'Registered Psychologists (part-time, pain & trauma)',
           ]}
           columns={1}
         />
@@ -85,6 +86,30 @@ export default function CareersPage() {
             Submit Your Resume →
           </Link>
         </div>
+      </Section>
+
+      <Section heading="Registered Psychologist (R.Psych)" subheading="Pain, trauma & injury recovery — Edmonton" id="psychologist">
+        <Prose>
+          <p>
+            <strong>Role Focus:</strong> Chronic pain, trauma, and MVA / injury recovery support, working alongside our physiotherapy, manual osteopathy, and chiropractic team with in-clinic referrals.
+          </p>
+          <p>
+            <strong>Schedule:</strong> Part-time to start, with room to build a steady private / extended-health caseload in a dedicated treatment room in our new section.
+          </p>
+          <p>
+            <strong>Associate Model:</strong> Room rent, or a fee split of approximately 60/40 (practitioner / clinic) on collected private and extended-health billings.
+          </p>
+          <p>
+            <strong>Requirements:</strong> Active registration in good standing with the College of Alberta Psychologists (CAP) and your own professional liability insurance.
+          </p>
+          <p>
+            <strong>How to Apply:</strong> Email your CV and a brief note on your injury/pain experience to{' '}
+            <a href="mailto:orvilledavis95@gmail.com?subject=AIM%20Psychologist%20%E2%80%94%20%5BYour%20Name%5D" className="text-aim-teal underline">
+              orvilledavis95@gmail.com
+            </a>{' '}
+            with the subject line <strong>&ldquo;AIM Psychologist — [Your Name]&rdquo;</strong>.
+          </p>
+        </Prose>
       </Section>
 
       <Section heading="What We Offer" muted>
