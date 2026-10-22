@@ -39,6 +39,12 @@ const bookingConfirmSchema = z.object({
   utm_campaign: optionalUtm,
   utm_content: optionalUtm,
   utm_term: optionalUtm,
+  // Google click identifiers. gclid is the normal one; gbraid/wbraid are
+  // issued instead of gclid on iOS app<->web journeys, which is a large slice
+  // of this clinic's mobile traffic. Accepting only gclid drops those clicks.
+  gclid: optionalUtm,
+  gbraid: optionalUtm,
+  wbraid: optionalUtm,
 });
 
 export async function POST(request: NextRequest) {
@@ -88,6 +94,9 @@ export async function POST(request: NextRequest) {
         utm_campaign: validatedData.utm_campaign ?? undefined,
         utm_content: validatedData.utm_content ?? undefined,
         utm_term: validatedData.utm_term ?? undefined,
+        gclid: validatedData.gclid ?? undefined,
+        gbraid: validatedData.gbraid ?? undefined,
+        wbraid: validatedData.wbraid ?? undefined,
       },
       readUtmsFromCookieHeader(request.headers.get('cookie')),
       readUtmsFromSearchParams(request.nextUrl.searchParams),

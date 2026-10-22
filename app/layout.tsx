@@ -7,6 +7,10 @@ import { SkipToContent } from '@/components/layout/skip-to-content';
 import { Toaster } from '@/components/ui/toaster';
 import { ClientTrackingWrapper } from '@/components/providers/client-tracking-wrapper';
 import { GA_MEASUREMENT_ID, GOOGLE_ADS_ID } from '@/lib/gtag';
+import {
+  GoogleTagManagerScript,
+  GoogleTagManagerNoScript,
+} from '@/components/analytics/google-tag-manager';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -58,8 +62,15 @@ export default function RootLayout({
             ${GOOGLE_ADS_ID ? `gtag('config', '${GOOGLE_ADS_ID}');` : ''}
           `}
         </Script>
+
+        {/* Google Tag Manager. Deliberately AFTER gtag.js above: GA4 and Ads
+            are loaded directly by this site, and GTM is here for tags that are
+            not. See components/analytics/google-tag-manager.tsx before adding
+            a GA4 tag inside the container — it would double every number. */}
+        <GoogleTagManagerScript />
       </head>
       <body className={inter.className}>
+        <GoogleTagManagerNoScript />
         <ClientTrackingWrapper>
           <SkipToContent />
           <SiteHeader />
