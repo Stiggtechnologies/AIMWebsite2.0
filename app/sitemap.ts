@@ -52,6 +52,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Service pages that exist as static routes under app/services/ but are not
   // entries in the services data module (so the map above misses them).
   const routeOnlyServicePages = [
+    'cognitive-functional-therapy',
     'functional-capacity-evaluations',
     'performance-rehabilitation',
     'return-to-work',

@@ -13,6 +13,7 @@ import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { useTracking } from '@/components/providers/tracking-provider';
 import { bookableLocations } from '@/lib/content/locations';
 import { getUtmsForPayload } from '@/lib/utm';
+import { gtagEvent } from '@/lib/gtag';
 
 const BOOKABLE = bookableLocations();
 const LOCATION_SLUGS = BOOKABLE.map((l) => l.slug) as [string, ...string[]];
@@ -21,7 +22,7 @@ const DEFAULT_LOCATION = LOCATION_SLUGS[0];
 const QuickIntakeSchema = z.object({
   full_name: z.string().min(3),
   phone: z.string().min(10),
-  service_interest: z.enum(['chiropractic-care', 'physiotherapy', 'massage-therapy', 'orthotics', 'manual-osteopathy', 'other']),
+  service_interest: z.enum(['chiropractic-care', 'physiotherapy', 'massage-therapy', 'orthotics', 'manual-osteopathy', 'cognitive-functional-therapy', 'chronic-pain-program', 'other']),
   issue_type: z.enum(['work_injury', 'mva', 'sports', 'chronic_pain', 'other']),
   location: z.enum(LOCATION_SLUGS),
   consent_privacy: z.literal(true),
@@ -50,7 +51,9 @@ export default function QuickIntakeFormPage() {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [serviceInterest, setServiceInterest] = useState<z.infer<typeof QuickIntakeSchema>['service_interest']>(initialService);
-  const [issueType, setIssueType] = useState<z.infer<typeof QuickIntakeSchema>['issue_type']>('other');
+  const [issueType, setIssueType] = useState<z.infer<typeof QuickIntakeSchema>['issue_type']>(
+    initialService === 'cognitive-functional-therapy' || initialService === 'chronic-pain-program' ? 'chronic_pain' : 'other'
+  );
   const [location, setLocation] = useState<string>(DEFAULT_LOCATION);
   const [consentPrivacy, setConsentPrivacy] = useState(true);
   const [consentCommunication, setConsentCommunication] = useState(true);
@@ -124,6 +127,13 @@ export default function QuickIntakeFormPage() {
       }
 
       trackFormSubmit('quick-intake', 'intake', true);
+      // Per-service demand tracking in GA4 (e.g. Cognitive Functional Therapy).
+      gtagEvent('service_lead', {
+        event_category: 'conversion',
+        service: serviceInterest,
+        issue_type: issueType,
+        source_service_param: requestedService || '',
+      });
       setSuccess(true);
     } catch (e) {
       trackFormSubmit('quick-intake', 'intake', false);
@@ -210,6 +220,8 @@ export default function QuickIntakeFormPage() {
                 <option value="massage-therapy">Massage therapy</option>
                 <option value="orthotics">Orthotics</option>
                 <option value="manual-osteopathy">Manual osteopathy</option>
+                <option value="cognitive-functional-therapy">Cognitive Functional Therapy (CFT)</option>
+                <option value="chronic-pain-program">Chronic Pain Program</option>
                 <option value="other">Not sure / other</option>
               </select>
             </div>

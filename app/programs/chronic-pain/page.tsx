@@ -107,7 +107,7 @@ export default function ChronicPainProgramPage() {
         eyebrow="Chronic Pain Program"
         headline="Still in pain after trying everything? There is a different way to treat it."
         subheadline="Our Chronic Pain Program combines Cognitive Functional Therapy (CFT) with team-based care to help you understand your pain, move with confidence again and get back to the work and life that matter to you."
-        primaryCta={{ label: 'Book a Chronic Pain Assessment', href: '/book?service=chronic-pain-rehabilitation' }}
+        primaryCta={{ label: 'Book a Chronic Pain Assessment', href: '/intake/form?service=chronic-pain-program' }}
         secondaryCta={{ label: 'Call (780) 250-8188', href: 'tel:+17802508188' }}
       />
 
@@ -142,6 +142,11 @@ export default function ChronicPainProgramPage() {
         heading="Cognitive Functional Therapy, backed by a care team"
         subheading="CFT is a physiotherapist-led approach developed by Professor Peter O'Sullivan and colleagues. Your physiotherapist works out what is keeping your pain going and coaches you to change it — with support from the wider AIM team when you need it."
       >
+        <p className="-mt-6 mb-8">
+          <Link href="/services/cognitive-functional-therapy" className="font-medium text-aim-teal underline-offset-4 hover:underline">
+            Learn more about Cognitive Functional Therapy →
+          </Link>
+        </p>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {cftPillars.map((p, i) => (
             <div key={p.title} className="rounded-2xl border border-aim-divider-gray/50 bg-white p-6">
@@ -266,7 +271,7 @@ export default function ChronicPainProgramPage() {
       <CtaStrip
         headline="Take the first step toward getting your life back"
         subheadline="Book a chronic pain assessment at the AIM clinic nearest you."
-        primaryCta={{ label: 'Book a Chronic Pain Assessment', href: '/book?service=chronic-pain-rehabilitation' }}
+        primaryCta={{ label: 'Book a Chronic Pain Assessment', href: '/intake/form?service=chronic-pain-program' }}
         secondaryCta={{ label: 'Contact Us', href: '/contact' }}
       />
 
