@@ -14,6 +14,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/services',
     '/locations',
     '/conditions',
+    '/programs',
+    '/programs/chronic-pain',
     '/for-patients',
     '/for-patients/what-to-expect',
     '/for-patients/direct-billing',

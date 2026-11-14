@@ -105,6 +105,11 @@ export function Footer() {
                     </Link>
                   </li>
                   <li>
+                    <Link href="/programs/chronic-pain" className="text-sm leading-6 text-gray-300 hover:text-aim-teal transition-colors">
+                      Chronic Pain Program
+                    </Link>
+                  </li>
+                  <li>
                     <Link href="/programs/athletic" className="text-sm leading-6 text-gray-300 hover:text-aim-teal transition-colors">
                       Athletic Performance
                     </Link>

@@ -25,6 +25,20 @@ export function ServicePage({ service }: { service: Service }) {
         secondaryCta={{ label: 'Find a Location', href: '/locations' }}
       />
 
+      {service.relatedProgram && (
+        <section className="border-y border-aim-teal/20 bg-aim-steel-blue">
+          <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-8 md:flex-row md:items-center md:justify-between md:px-8">
+            <p className="max-w-3xl text-base leading-relaxed text-aim-navy">{service.relatedProgram.blurb}</p>
+            <Link
+              href={service.relatedProgram.href}
+              className="inline-flex flex-shrink-0 items-center justify-center rounded-md bg-aim-teal px-6 py-3 font-semibold text-white transition hover:bg-aim-teal/90"
+            >
+              {service.relatedProgram.label}
+            </Link>
+          </div>
+        </section>
+      )}
+
       <Section heading="How we help" subheading={`Conditions and concerns ${service.name.toLowerCase()} at AIM can help with.`}>
         <FeatureList items={service.helps} columns={2} />
       </Section>
