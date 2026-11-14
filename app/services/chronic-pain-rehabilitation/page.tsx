@@ -7,7 +7,7 @@ const SLUG = 'chronic-pain-rehabilitation';
 
 export const metadata = buildMetadata({
   title: 'Chronic Pain Rehabilitation',
-  description: 'Pain-science informed chronic pain management using graded movement, education, and function-focused recovery strategies.',
+  description: 'Chronic pain rehabilitation built on Cognitive Functional Therapy (CFT), graded movement, and team-based, function-focused recovery.',
   path: `/services/${SLUG}`,
 });
 

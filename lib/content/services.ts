@@ -11,6 +11,7 @@ export type Service = {
   icon: string;
   category: 'rehab' | 'specialty' | 'complementary';
   existing?: boolean;
+  relatedProgram?: { label: string; href: string; blurb: string };
 };
 
 export const services: Service[] = [
@@ -122,18 +123,24 @@ export const services: Service[] = [
   {
     slug: 'chronic-pain-rehabilitation',
     name: 'Chronic Pain Rehabilitation',
-    shortDescription: 'Evidence-based, function-focused support for persistent pain and movement limitations.',
-    positioning: 'Modern chronic pain care built on pain science, graded movement, and rebuilding what matters — work, activity, and quality of life.',
+    shortDescription: 'Cognitive Functional Therapy and team-based care for persistent pain and movement limitations.',
+    positioning: 'Modern chronic pain care built on Cognitive Functional Therapy (CFT) — making sense of your pain, safely returning to the movements you avoid, and rebuilding what matters: work, activity, and quality of life.',
     helps: ['Persistent back or neck pain', 'Fibromyalgia', 'Long COVID with pain', 'Complex regional pain syndrome', 'Post-injury pain that won\'t resolve'],
-    treatmentMay: ['Pain neuroscience education', 'Graded movement and exposure', 'Activity pacing', 'Strength and mobility work', 'Self-management coaching', 'Multidisciplinary coordination'],
+    treatmentMay: ['Cognitive Functional Therapy (CFT)', 'Making sense of your pain (pain science education)', 'Graded exposure to feared or avoided movements', 'Lifestyle coaching: activity, sleep and stress', 'Return-to-work planning', 'Coordination with physicians and psychologists'],
     whoFor: ['Anyone with pain lasting longer than 3 months', 'People told "there\'s nothing more to do"', 'Patients interested in active self-management'],
-    whyAim: ['Pain-science informed clinicians', 'No quick-fix promises', 'Focus on function and life, not just pain scores', 'Coordination with physicians and psychologists'],
+    whyAim: ['Structured Chronic Pain Program built on Cognitive Functional Therapy', 'No quick-fix promises', 'Focus on function and life, not just pain scores', 'Coordination with physicians and psychologists'],
     faqs: [
       { q: 'Can physiotherapy help if my pain is chronic?', a: 'Yes. Chronic pain responds well to graded movement, education, and active rehabilitation — even when imaging looks unchanged.' },
       { q: 'Will I be told to just "push through"?', a: 'No. Modern chronic pain care is paced, not punishing. We build capacity gradually within your tolerance.' },
+      { q: 'Do you offer a structured chronic pain program?', a: 'Yes. Our Chronic Pain Program combines Cognitive Functional Therapy with team-based care over about 12 weeks. See our Chronic Pain Program page for details.' },
     ],
     icon: 'HeartPulse',
     category: 'rehab',
+    relatedProgram: {
+      label: 'Explore the Chronic Pain Program',
+      href: '/programs/chronic-pain',
+      blurb: 'Our structured program combines Cognitive Functional Therapy with team-based care to help you understand your pain and get back to the life you value.',
+    },
   },
   {
     slug: 'mva-rehabilitation',

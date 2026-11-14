@@ -1,12 +1,12 @@
 import Link from 'next/link';
-import { Briefcase, Car, Trophy, Heart, ArrowRight } from 'lucide-react';
+import { Briefcase, Car, Trophy, Heart, HeartPulse, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PersonaCTACard } from '@/components/cta/persona-cta-card';
 import { LazyChatWidget } from '@/components/ai/lazy-chat-widget';
 
 export const metadata = {
   title: 'Programs | Alberta Injury Management',
-  description: 'Specialized rehabilitation programs for WCB, MVA, athletic injuries, seniors, and more. Expert care tailored to your recovery needs.',
+  description: 'Specialized rehabilitation programs for WCB, MVA, chronic pain, athletic injuries, seniors, and more. Expert care tailored to your recovery needs.',
 };
 
 export default function ProgramsPage() {
@@ -44,6 +44,15 @@ export default function ProgramsPage() {
               ctaText="Learn More"
               ctaHref="/programs/mva"
               ctaId="programs-mva"
+              variant="primary"
+            />
+            <PersonaCTACard
+              title="Chronic Pain Program"
+              description="Cognitive Functional Therapy with team-based support for pain lasting longer than 3 months. Understand your pain, move with confidence, and get back to work and life."
+              icon={HeartPulse}
+              ctaText="Learn More"
+              ctaHref="/programs/chronic-pain"
+              ctaId="programs-chronic-pain"
               variant="primary"
             />
             <PersonaCTACard
