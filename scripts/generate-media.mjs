@@ -26,8 +26,14 @@
 
 import { mkdirSync, existsSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import nextEnv from '@next/env';
 
 const ROOT = process.cwd();
+
+// Use the same loader as Next so a key pasted into .env.local (or .env, or the
+// shell) works without exporting anything. Without this the script silently saw
+// no provider and told people to set a variable they had already set.
+nextEnv.loadEnvConfig(ROOT, false, { info: () => {}, error: () => {} });
 const OUT_DIR = join(ROOT, 'public', 'source', 'generated');
 
 /**
@@ -262,10 +268,16 @@ async function main() {
     process.exit(1);
   }
 
+  const cost = chosen ? `~$${(COST_PER_IMAGE[chosen] * entries.length).toFixed(2)}` : 'n/a';
   console.log(
-    `provider: ${chosen ?? '(dry run — none configured)'}   frames: ${entries.length}   ` +
-      `estimated cost: ~$${(COST_PER_IMAGE[chosen] ?? 0.1) * entries.length}`
+    `provider: ${chosen ?? '(none configured)'}   frames: ${entries.length}   estimated cost: ${cost}`
   );
+  if (!chosen) {
+    console.log('\nThis is the dry run. Add a key to .env.local to actually generate:');
+    console.log('  GEMINI_API_KEY=...        gemini-2.5-flash-image   ~$0.04/image  (cheapest)');
+    console.log('  OPENAI_API_KEY=sk-...     gpt-image-1              ~$0.17/image');
+    console.log('  REPLICATE_API_TOKEN=r8_... flux-1.1-pro            ~$0.05/image');
+  }
 
   mkdirSync(OUT_DIR, { recursive: true });
   let made = 0;
