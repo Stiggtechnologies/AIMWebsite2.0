@@ -1,0 +1,40 @@
+name: Quality
+
+# The advertising gate exists because the College of Physiotherapists of Alberta
+# screens clinic websites with an automated tool and reports findings to the
+# Registrar. A checker that nobody runs is decoration, so it runs on every PR.
+# See docs/advertising-compliance.md.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Copy compliance + types
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Advertising copy compliance
+        run: npm run check:copy
+
+      - name: Typecheck
+        run: npm run typecheck

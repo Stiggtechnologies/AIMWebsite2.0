@@ -146,12 +146,16 @@ export function MediaPanel({
   eyebrow,
   value,
   label,
+  points,
   className = '',
   ratio = '4/5',
 }: {
   eyebrow?: string;
   value: string;
   label: string;
+  /** Short, factual lines. Never a claim — this panel replaces a photograph, it
+   *  does not argue a case. */
+  points?: string[];
   className?: string;
   ratio?: Ratio;
 }) {
@@ -180,8 +184,18 @@ export function MediaPanel({
           <span />
         )}
         <div>
-          <div className="text-5xl font-semibold tracking-tight text-white">{value}</div>
-          <div className="mt-3 max-w-[22ch] text-sm leading-relaxed text-white/70">{label}</div>
+          <div className="text-6xl font-semibold tracking-tight text-white">{value}</div>
+          <div className="mt-3 max-w-[24ch] text-sm leading-relaxed text-white/70">{label}</div>
+          {points && points.length > 0 && (
+            <ul className="mt-6 space-y-2 border-t border-white/15 pt-5">
+              {points.map((point) => (
+                <li key={point} className="flex items-start gap-2 text-sm leading-relaxed text-white/80">
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-aim-teal" aria-hidden="true" />
+                  {point}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </div>

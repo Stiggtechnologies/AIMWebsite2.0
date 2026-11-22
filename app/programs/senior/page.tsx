@@ -29,6 +29,11 @@ export default function SeniorProgramPage() {
             eyebrow="Senior mobility"
             value="1:1"
             label="Every program starts with an individual assessment and a goal you set."
+            points={[
+              'Assessment on day one',
+              'A plan you can repeat at home',
+              'Scheduled review points',
+            ]}
           />
         }
       />
