@@ -88,8 +88,8 @@ export const services: Service[] = [
   {
     slug: 'pelvic-floor-physiotherapy',
     name: 'Pelvic Floor Physiotherapy',
-    shortDescription: 'Private, specialized care for pelvic floor dysfunction, prenatal/postpartum recovery, and pelvic pain.',
-    positioning: 'Discreet, compassionate pelvic health physiotherapy — because pelvic symptoms deserve specialized care, not silence.',
+    shortDescription: 'Private, focused care for pelvic floor dysfunction, prenatal/postpartum recovery, and pelvic pain.',
+    positioning: 'Discreet, compassionate pelvic health physiotherapy — because pelvic symptoms deserve focused care, not silence.',
     helps: ['Urinary incontinence', 'Pelvic pain', 'Prenatal aches and preparation for birth', 'Postpartum recovery', 'Diastasis recti', 'Prolapse management', 'Painful intercourse', 'Post-surgical pelvic recovery'],
     treatmentMay: ['External and (when appropriate) internal assessment', 'Pelvic floor muscle training', 'Breathing and pressure management', 'Postural and core retraining', 'Manual therapy', 'Home exercise program'],
     whoFor: ['Prenatal patients', 'Postpartum patients (any time after birth)', 'Menopausal patients', 'Anyone with pelvic pain or dysfunction', 'Patients recovering from pelvic or abdominal surgery'],

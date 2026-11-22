@@ -4,44 +4,34 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { LazyChatWidget } from '@/components/ai/lazy-chat-widget';
+import { HeroBlock } from '@/components/blocks/hero-block';
+import { MediaPanel } from '@/components/media/site-image';
+import { programImage } from '@/lib/media';
 
 export const metadata = {
   title: 'Senior Mobility & Fall Prevention | Alberta Injury Management',
-  description: 'Specialized mobility programs for seniors in Alberta. Balance training, fall prevention, and strength programs to maintain independence and quality of life.',
+  description: 'Mobility programs for seniors in Alberta. Balance training, fall prevention, and strength programs to maintain independence and quality of life.',
 };
 
 export default function SeniorProgramPage() {
   return (
     <>
-      <div className="bg-gradient-to-b from-aim-steel-blue to-white py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-aim-navy sm:text-5xl">
-              Senior Mobility & Fall Prevention
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-aim-slate">
-              Maintain independence and quality of life with programs designed specifically for active aging.
-            </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Button
-                asChild
-                size="lg"
-                className="bg-aim-cta-primary hover:bg-aim-cta-primary/90 text-white"
-              >
-                <Link href="/intake">Get Started</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-aim-navy text-aim-navy hover:bg-aim-steel-blue"
-              >
-                <Link href="/book">Book Assessment</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <HeroBlock
+        eyebrow="Program"
+        headline="Senior Mobility & Fall Prevention"
+        subheadline="Balance, strength and gait training for older adults who want to keep doing the things that matter to them."
+        primaryCta={{ label: 'Get Started', href: '/intake' }}
+        secondaryCta={{ label: 'Book Assessment', href: '/book' }}
+        highlights={['Balance and gait training', 'Fall prevention', 'Home safety review']}
+        image={programImage('senior') ?? undefined}
+        panel={
+          <MediaPanel
+            eyebrow="Senior mobility"
+            value="1:1"
+            label="Every program starts with an individual assessment and a goal you set."
+          />
+        }
+      />
 
       <div className="py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -224,7 +214,7 @@ export default function SeniorProgramPage() {
               Take the First Step Toward Better Mobility
             </h2>
             <p className="mt-4 text-lg text-gray-300">
-              Stay active, independent, and confident with expert support from our team.
+              Stay active, independent, and confident with support from our team.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Button

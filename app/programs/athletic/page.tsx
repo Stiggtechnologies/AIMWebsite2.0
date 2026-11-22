@@ -4,44 +4,27 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { LazyChatWidget } from '@/components/ai/lazy-chat-widget';
+import { HeroBlock } from '@/components/blocks/hero-block';
+import { MediaPanel } from '@/components/media/site-image';
+import { programImage } from '@/lib/media';
 
 export const metadata = {
   title: 'Athletic Performance Program | Alberta Injury Management',
-  description: 'Sport-specific rehabilitation and performance optimization for athletes. Expert injury prevention, recovery, and performance enhancement programs in Alberta.',
+  description: 'Sport-specific rehabilitation and performance optimization for athletes. Injury prevention, recovery, and performance enhancement programs in Alberta.',
 };
 
 export default function AthleticProgramPage() {
   return (
     <>
-      <div className="bg-gradient-to-b from-aim-steel-blue to-white py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-aim-navy sm:text-5xl">
-              Athletic Performance Program
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-aim-slate">
-              Sport-specific rehabilitation and performance optimization to keep you competing at your highest level.
-            </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Button
-                asChild
-                size="lg"
-                className="bg-aim-cta-primary hover:bg-aim-cta-primary/90 text-white"
-              >
-                <Link href="/intake">Start Your Journey</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-aim-navy text-aim-navy hover:bg-aim-steel-blue"
-              >
-                <Link href="/book">Book Assessment</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <HeroBlock
+        eyebrow="Program"
+        headline="Athletic Performance Program"
+        subheadline="Sport-specific rehabilitation and performance assessment for athletes, from return-to-sport testing to injury prevention."
+        primaryCta={{ label: 'Start Your Journey', href: '/intake' }}
+        secondaryCta={{ label: 'Book Assessment', href: '/book' }}
+        highlights={['Sport-specific rehabilitation', 'Return-to-sport testing']}
+        image={programImage('athletic') ?? undefined}
+      />
 
       <div className="py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -107,7 +90,7 @@ export default function AthleticProgramPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl lg:text-center">
             <h2 className="text-3xl font-bold tracking-tight text-aim-navy sm:text-4xl">
-              Sports & Conditions We Specialize In
+              Sports & Conditions We Work With
             </h2>
           </div>
 
@@ -188,7 +171,7 @@ export default function AthleticProgramPage() {
               <AccordionItem value="item-3">
                 <AccordionTrigger>Do you work with youth athletes?</AccordionTrigger>
                 <AccordionContent>
-                  Yes. We work with athletes of all ages and levels, from youth sports to elite competitors. Our programs are tailored to each athlete's developmental stage and competitive demands.
+                  Yes. We work with athletes of all ages and levels, from youth sport to high-performance competition. Our programs are tailored to each athlete's developmental stage and competitive demands.
                 </AccordionContent>
               </AccordionItem>
 
@@ -217,7 +200,7 @@ export default function AthleticProgramPage() {
               Ready to Elevate Your Performance?
             </h2>
             <p className="mt-4 text-lg text-gray-300">
-              Get back in the game stronger and faster with expert athletic rehabilitation.
+              Get back to your sport with rehabilitation built around your goals.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Button

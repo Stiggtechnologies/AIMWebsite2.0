@@ -7,7 +7,7 @@ const SLUG = 'pelvic-floor-physiotherapy';
 
 export const metadata = buildMetadata({
   title: 'Pelvic Floor Physiotherapy',
-  description: 'Compassionate pelvic health care for prenatal, postpartum, pelvic pain, and incontinence — private, judgment-free specialized treatment.',
+  description: 'Compassionate pelvic health care for prenatal, postpartum, pelvic pain, and incontinence — private, judgment-free focused treatment.',
   path: `/services/${SLUG}`,
 });
 

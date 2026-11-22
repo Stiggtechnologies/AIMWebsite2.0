@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Briefcase, Car, Trophy, Heart, Building2, Shield } from 'lucide-react';
 import { PersonaCTACard } from '@/components/cta/persona-cta-card';
+import { image } from '@/lib/media';
 import { LazyChatWidget } from '@/components/ai/lazy-chat-widget';
 
 export const metadata = {
@@ -18,7 +19,7 @@ export default function WhoWeHelpPage() {
               Who We Help
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-300">
-              Specialized care for diverse needs across Alberta's communities and industries.
+              Care for diverse needs across Alberta's communities and industries.
             </p>
           </div>
         </div>
@@ -35,6 +36,7 @@ export default function WhoWeHelpPage() {
               ctaHref="/programs/wcb"
               ctaId="who-we-help-wcb"
               variant="primary"
+              image={image('work-card')}
             />
             <PersonaCTACard
               title="MVA Patients"
@@ -44,6 +46,7 @@ export default function WhoWeHelpPage() {
               ctaHref="/programs/mva"
               ctaId="who-we-help-mva"
               variant="primary"
+              image={image('assess-card')}
             />
             <PersonaCTACard
               title="Athletes"
@@ -53,6 +56,7 @@ export default function WhoWeHelpPage() {
               ctaHref="/programs/athletic"
               ctaId="who-we-help-athletic"
               variant="primary"
+              image={image('assess-detail')}
             />
             <PersonaCTACard
               title="Seniors"
@@ -71,6 +75,7 @@ export default function WhoWeHelpPage() {
               ctaHref="/employers"
               ctaId="who-we-help-employers"
               variant="secondary"
+              image={image('work-detail')}
             />
             <PersonaCTACard
               title="Insurance Providers"
@@ -80,6 +85,7 @@ export default function WhoWeHelpPage() {
               ctaHref="/insurers"
               ctaId="who-we-help-insurers"
               variant="secondary"
+              image={image('refer-card')}
             />
           </div>
         </div>

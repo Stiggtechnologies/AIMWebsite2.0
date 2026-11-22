@@ -15,7 +15,7 @@ export default function PartnershipsPage() {
     <>
       <HeroBlock
         headline="Partnerships & Growth Opportunities"
-        subheadline="Join us in building Alberta's leading integrated rehabilitation platform."
+        subheadline="Join us in building Alberta's integrated rehabilitation platform."
         primaryCta={{ label: 'Explore Partnership', href: '#clinic-partnership-inquiry' }}
         secondaryCta={{ label: 'Contact Us', href: '/contact' }}
       />

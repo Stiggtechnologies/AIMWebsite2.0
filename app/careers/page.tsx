@@ -39,7 +39,7 @@ export default function CareersPage() {
           <div className="rounded-lg bg-white p-6">
             <h3 className="mb-3 text-lg font-semibold text-aim-navy">Multidisciplinary Team</h3>
             <p className="text-aim-slate/85">
-              Collaborate with physiotherapists, chiropractors, massage therapists, and other specialists. Share knowledge, learn from colleagues, and provide comprehensive patient care.
+              Collaborate with physiotherapists, chiropractors, massage therapists, and other health professionals. Share knowledge, learn from colleagues, and provide comprehensive patient care.
             </p>
           </div>
           <div className="rounded-lg bg-white p-6">
@@ -51,7 +51,7 @@ export default function CareersPage() {
           <div className="rounded-lg bg-white p-6">
             <h3 className="mb-3 text-lg font-semibold text-aim-navy">Growth Trajectory</h3>
             <p className="text-aim-slate/85">
-              Join us during an exciting growth phase. Opportunities for professional development, clinical specialization, and leadership roles.
+              Join us during an exciting growth phase. Opportunities for professional development, clinical development, and leadership roles.
             </p>
           </div>
           <div className="rounded-lg bg-white p-6">
@@ -93,7 +93,7 @@ export default function CareersPage() {
             <strong>Competitive Compensation:</strong> Salaries and benefits competitive with Alberta market standards. Physio and RMT positions include performance bonuses based on outcomes.
           </p>
           <p>
-            <strong>Professional Development:</strong> Support for continuing education, certifications, and specialization. Budget allocated for courses and conferences.
+            <strong>Professional Development:</strong> Support for continuing education, certifications, and clinical development. Budget allocated for courses and conferences.
           </p>
           <p>
             <strong>Flexible Scheduling:</strong> We work with you on schedules that suit your life. Options for part-time, full-time, and flexible arrangements.

@@ -2,6 +2,8 @@ import { LazyChatWidget } from '@/components/ai/lazy-chat-widget';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertTriangle, Star } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { MediaSplit } from '@/components/media/site-image';
+import { image } from '@/lib/media';
 
 export const metadata = {
   title: 'About Us | Alberta Injury Management',
@@ -36,16 +38,32 @@ export default async function AboutPage() {
       </div>
 
       <div className="py-16 sm:py-24">
-        <div className="mx-auto max-w-3xl px-6 lg:px-8">
-          <div className="prose prose-lg max-w-none">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <MediaSplit image={image('assess-portrait')} ratio="4/5" className="mb-16">
+            <p className="text-sm font-semibold uppercase tracking-wider text-aim-teal">Who we are</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-aim-navy md:text-4xl">
+              A clinic built around the assessment, not the appointment
+            </h2>
+            <p className="mt-5 text-lg leading-relaxed text-aim-slate">
+              AIM was started by clinicians who kept seeing the same problem: people treated for
+              weeks without a clear answer to “what exactly is wrong, and what is the plan?”.
+            </p>
+            <p className="mt-4 text-base leading-relaxed text-aim-slate/85">
+              Every course of care here starts with a physical examination, a working diagnosis and
+              goals you can state in your own words. Progress is reviewed against function, not just
+              how the injury feels on the day.
+            </p>
+          </MediaSplit>
+
+          <div className="prose prose-lg max-w-none lg:max-w-3xl">
             <h2 className="text-3xl font-bold text-aim-navy mb-6">Our Mission</h2>
             <p className="text-lg text-aim-slate mb-8">
-              Alberta Injury Management provides evidence-based physiotherapy and rehabilitation services focused on measurable outcomes and lasting results. We specialize in helping Albertans recover from workplace injuries, motor vehicle accidents, and sports injuries through personalized, goal-oriented care.
+              Alberta Injury Management provides evidence-based physiotherapy and rehabilitation services focused on measurable outcomes and lasting results. Our work focuses on helping Albertans recover from workplace injuries, motor vehicle accidents, and sports injuries through personalized, goal-oriented care.
             </p>
 
             <h2 className="text-3xl font-bold text-aim-navy mb-6">Our Approach</h2>
             <p className="text-lg text-aim-slate mb-8">
-              We combine the latest research with hands-on clinical expertise to deliver treatment that works. Every patient receives a customized care plan with clear goals, regular progress tracking, and adjustments based on outcomes. Our team works collaboratively with employers, insurance providers, and other healthcare professionals to ensure comprehensive, coordinated care.
+              We combine the latest research with hands-on clinical experience to deliver treatment that works. Every patient receives a customized care plan with clear goals, regular progress tracking, and adjustments based on outcomes. Our team works collaboratively with employers, insurance providers, and other healthcare professionals to ensure comprehensive, coordinated care.
             </p>
 
             <h2 className="text-3xl font-bold text-aim-navy mb-6">Why Choose AIM</h2>

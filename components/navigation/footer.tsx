@@ -23,7 +23,7 @@ export function Footer() {
                 <span className="font-semibold text-lg">Alberta Injury Management</span>
               </div>
               <p className="mt-4 text-sm leading-6 text-gray-300">
-                Outcome-based physiotherapy and injury management for Alberta. Expert care for work injuries, MVA recovery, and athletic performance.
+                Outcome-based physiotherapy and injury management for Alberta. Care for work injuries, MVA recovery, and athletic performance.
               </p>
               <div className="mt-4 flex items-center gap-2">
                 <div className="flex gap-0.5">
@@ -193,6 +193,9 @@ export function Footer() {
           </div>
           <p className="mt-4 text-xs leading-5 text-gray-500">
             Healthcare Disclaimer: Information on this website is for educational purposes only and does not constitute medical advice. Always consult with a qualified healthcare provider for diagnosis and treatment.
+          </p>
+          <p className="mt-2 text-xs leading-5 text-gray-500">
+            Photography is illustrative. Images on this site do not depict AIM patients, clinicians or clinic premises.
           </p>
         </div>
       </div>

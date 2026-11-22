@@ -11,7 +11,10 @@
     "verify:resources": "node scripts/verify-resources.mjs",
     "verify:resources:visual": "node scripts/verify-resources.mjs --snapshot",
     "ship:resources": "node scripts/ship-resources-batch.mjs",
-    "test": "node --test --experimental-strip-types \"lib/**/*.test.ts\""
+    "test": "node --test --experimental-strip-types \"lib/**/*.test.ts\"",
+    "check:copy": "node scripts/check-advertising-copy.mjs",
+    "media:build": "python3 scripts/build-media.py",
+    "verify": "npm run check:copy && npm run typecheck"
   },
   "devDependencies": {
     "@types/nodemailer": "^8.0.1",
