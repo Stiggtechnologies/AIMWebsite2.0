@@ -38,9 +38,12 @@ export const OPTIONAL_SLOTS = [
   'sport-hero',
   'sport-wide',
   'sport-card',
+  'massage-hero',
   'massage-wide',
   'massage-card',
+  'vestibular-hero',
   'vestibular-wide',
+  'pelvic-hero',
   'pelvic-wide',
   'reception-wide',
   'reception-card',
@@ -97,9 +100,12 @@ const ALT: Record<MediaSlot, string> = {
   'sport-hero': 'A physiotherapist timing a single-leg hop test for an athlete on a gym floor.',
   'sport-wide': 'A clinician assessing an athlete’s jump landing in a gym.',
   'sport-card': 'An athlete landing a single-leg hop during a return-to-sport test.',
+  'massage-hero': 'A massage therapist working on a client’s shoulder and upper back.',
   'massage-wide': 'A massage therapist treating a client’s shoulder on a treatment table.',
   'massage-card': 'A draped client receiving shoulder massage therapy.',
+  'vestibular-hero': 'A clinician guiding a seated patient through a visual gaze-stabilisation exercise.',
   'vestibular-wide': 'A clinician guiding a seated patient through a gaze-stabilisation exercise.',
+  'pelvic-hero': 'A clinician and a patient talking across a table in a private consultation room.',
   'pelvic-wide': 'Two people talking in a private consultation room.',
   'reception-wide': 'An empty clinic reception with a counter, chairs and a plant.',
   'reception-card': 'A clinic waiting area with seating and a low table.',
@@ -153,9 +159,11 @@ const WORK_SERVICES = new Set([
 const REFERRAL_SERVICES = new Set<string>([]);
 
 const GENERATED_SERVICE_SLOTS: Record<string, OptionalSlot> = {
-  'massage-therapy': 'massage-wide',
-  'vestibular-rehabilitation': 'vestibular-wide',
-  'pelvic-floor-physiotherapy': 'pelvic-wide',
+  'massage-therapy': 'massage-hero',
+  'pelvic-floor-physiotherapy': 'pelvic-hero',
+  // vestibular-hero is generated but NOT mapped: the frame reads as two people
+  // pointing at each other rather than a gaze-stabilisation test. The service
+  // page keeps the sourced assessment frame until a better shot exists.
 };
 
 export function serviceImage(slug: string): SlotImage {

@@ -18,6 +18,7 @@ Run:      python3 scripts/build-media.py
 from __future__ import annotations
 
 import base64
+import hashlib
 import io
 import json
 import os
@@ -103,9 +104,12 @@ SLOTS: dict[str, Slot] = {
     "sport-hero": Slot("sport", 4 / 5, (0.50, 0.42), 960),
     "sport-wide": Slot("sport", 16 / 9, (0.50, 0.45), 1400),
     "sport-card": Slot("sport", 4 / 3, (0.50, 0.45), 960),
+    "massage-hero": Slot("massage", 4 / 5, (0.48, 0.42), 960),
     "massage-wide": Slot("massage", 16 / 9, (0.50, 0.50), 1400),
     "massage-card": Slot("massage", 4 / 3, (0.50, 0.50), 960),
+    "vestibular-hero": Slot("vestibular", 4 / 5, (0.62, 0.42), 960),
     "vestibular-wide": Slot("vestibular", 16 / 9, (0.50, 0.48), 1400),
+    "pelvic-hero": Slot("pelvic", 4 / 5, (0.42, 0.45), 960),
     "pelvic-wide": Slot("pelvic", 16 / 9, (0.50, 0.50), 1400),
     "reception-wide": Slot("reception", 16 / 9, (0.50, 0.50), 1400),
     "reception-card": Slot("reception", 4 / 3, (0.50, 0.50), 960),
@@ -167,10 +171,24 @@ def crop_to_ratio(im: Image.Image, ratio: float, focus: tuple[float, float]) -> 
 
 
 def encode(im: Image.Image, name: str) -> dict:
-    w, h = im.size
-    path = os.path.join(OUT_DIR, f"{name}.webp")
-    im.save(path, "WEBP", quality=QUALITY, method=6)
+    """Encode to a content-addressed filename.
 
+    Next's image optimizer caches by URL. If a replacement photo keeps the same
+    filename the cached (old) bytes can keep being served, which is exactly what
+    happened when a generated frame replaced a test image. Hashing the filename
+    makes every change a new URL.
+    """
+    w, h = im.size
+    buf = io.BytesIO()
+    im.save(buf, "WEBP", quality=QUALITY, method=6)
+    payload = buf.getvalue()
+    digest = hashlib.sha256(payload).hexdigest()[:8]
+    filename = f"{name}-{digest}.webp"
+    path = os.path.join(OUT_DIR, filename)
+    with open(path, "wb") as fh:
+        fh.write(payload)
+
+    im = im  # noqa: PLW0127  (kept for readability below)
     blur = im.copy()
     blur.thumbnail((BLUR_WIDTH, BLUR_WIDTH), Image.LANCZOS)
     buf = io.BytesIO()
@@ -178,7 +196,7 @@ def encode(im: Image.Image, name: str) -> dict:
     data = base64.b64encode(buf.getvalue()).decode("ascii")
 
     return {
-        "src": f"/media/{name}.webp",
+        "src": f"/media/{filename}",
         "width": w,
         "height": h,
         "bytes": os.path.getsize(path),
@@ -191,6 +209,13 @@ def main() -> None:
     cache: dict[str, Image.Image] = {}
     manifest: dict[str, dict] = {}
     total = 0
+
+    # Preserve slots built earlier whose master is not on this machine.
+    if os.path.exists(MANIFEST):
+        with open(MANIFEST, encoding="utf-8") as fh:
+            for name, entry in json.load(fh).items():
+                if os.path.exists(os.path.join(ROOT, "public", entry["src"].lstrip("/"))):
+                    manifest[name] = entry
 
     skipped = []
     for name, slot in SLOTS.items():
@@ -213,6 +238,13 @@ def main() -> None:
         manifest[name] = entry
         total += entry["bytes"]
         print(f"  {name:<16} {entry['width']:>4}x{entry['height']:<4} {entry['bytes'] / 1024:6.1f} KB")
+
+    referenced = {os.path.basename(e["src"]) for e in manifest.values()}
+    removed = 0
+    for existing in os.listdir(OUT_DIR):
+        if existing.endswith(".webp") and existing not in referenced:
+            os.remove(os.path.join(OUT_DIR, existing))
+            removed += 1
 
     with open(MANIFEST, "w", encoding="utf-8") as fh:
         json.dump(manifest, fh, indent=2, sort_keys=True)

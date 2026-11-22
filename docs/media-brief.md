@@ -148,6 +148,26 @@ exterior, reception, treatment room, team corridor, Edmonton streetscape. They a
 share one style block (documentary, natural daylight, navy/teal palette, no text or
 logos) so the outputs grade consistently with the sourced library.
 
+### What has been generated so far
+
+Four of ten frames were accepted and are live on their pages:
+
+| Frame | Used on | Verdict |
+| --- | --- | --- |
+| `senior` | `/programs/senior` hero | Kept. Rejected on the first two attempts: the model produced a white lab coat and a stethoscope, which misrepresents a physiotherapist. Fixed by stating the wardrobe positively and naming exactly two people. |
+| `massage` | `/services/massage-therapy` hero | Kept. |
+| `pelvic` | `/services/pelvic-floor-physiotherapy` hero | Kept — private room, closed door, no equipment. |
+| `vestibular` | — | **Not used.** Generated but reads as two people pointing at each other, not a gaze test. The service keeps the sourced frame. |
+| `sport` | — | **Rejected.** Produced two clinicians crouching, no athlete. |
+| `team` | — | **Rejected.** White coat, stethoscope and identifiable faces; the brief requires faces not identifiable. |
+| `facility`, `reception`, `treatment-room` | — | Generated, held for review. Not wired: none may be captioned as an AIM clinic. |
+| `streetscape` | — | Not generated (Replicate credit ran out). |
+
+Lessons worth keeping: state wardrobe positively ("navy polo") because negative
+prompts are ignored, name an exact headcount, and specify the framing you actually
+need. Non-human subjects (rooms, exteriors) generated cleanly first time; human
+subjects needed two or three attempts and still produced two rejects.
+
 ### When generation fails
 
 - **`quota exhausted ... Free Tier`** — image generation is a paid feature. The

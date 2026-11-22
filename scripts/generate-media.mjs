@@ -46,16 +46,26 @@ const STYLE =
   'contemporary Canadian physiotherapy clinic interior, calm neutral palette with ' +
   'navy and teal accents, 35mm lens, shallow depth of field, realistic skin and ' +
   'fabric texture, no text, no logos, no watermarks, no brand marks, ' +
-  'no medical procedures that break skin.';
+  'no medical procedures that break skin. ' +
+  // Physiotherapists do not wear white coats or stethoscopes in Canada; a lab
+  // coat reads as a physician and misrepresents who is treating the patient.
+  'The clinician wears a plain navy polo shirt and dark trousers — never a white ' +
+  'lab coat, never a stethoscope, never a hospital gown.';
+
+/** Every clinical frame must show a physiotherapist, not a physician. */
+const CLINICIAN = 'a registered physiotherapist,';
 
 const SPEC = [
   {
     key: 'senior',
     subject:
-      'A physiotherapist standing close beside an adult in their seventies who is practising a ' +
-      'single-leg balance exercise with a walking stick within reach. The clinician’s hand hovers ' +
-      'at the person’s waist as a guard. Both are focused, not smiling at camera. Ordinary ' +
-      'comfortable clothing, no exercise-brand logos.',
+      'Exactly two people in a bright physiotherapy room. On the right, a woman in her early ' +
+      'eighties in a grey knit sweater and beige trousers, standing on her right leg with her ' +
+      'left foot lifted ten centimetres off the floor, one hand resting lightly on the other ' +
+      'person’s forearm. On the left, a man in a plain navy short-sleeve polo shirt and dark ' +
+      'trousers, facing her, arms relaxed at his sides. Waist-up framing from the side so the ' +
+      'lifted foot is visible. Both looking at each other, calm. A wooden handrail on the wall ' +
+      'behind them.',
     aspect: 'portrait',
     usage: 'illustrative — /programs/senior hero. This is the real content gap.',
   },
@@ -167,10 +177,22 @@ function args() {
 }
 
 function provider() {
-  if (process.env.OPENAI_API_KEY) return 'openai';
-  if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) return 'gemini';
-  if (process.env.REPLICATE_API_TOKEN) return 'replicate';
-  return null;
+  // Explicit choice wins: MEDIA_PROVIDER=replicate, or --provider=replicate.
+  // Needed when more than one key is present but only one has quota.
+  const flag = process.argv.slice(2).find((a) => a.startsWith('--provider='));
+  const override = (flag ? flag.split('=')[1] : process.env.MEDIA_PROVIDER || '').toLowerCase();
+  const available = {
+    openai: Boolean(process.env.OPENAI_API_KEY),
+    gemini: Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY),
+    replicate: Boolean(process.env.REPLICATE_API_TOKEN),
+  };
+  if (override) {
+    if (!available[override]) {
+      throw new Error(`--provider=${override} requested but its key is not set`);
+    }
+    return override;
+  }
+  return (['openai', 'gemini', 'replicate'].find((p) => available[p]) ?? null);
 }
 
 function buildPrompt(entry) {
@@ -267,15 +289,26 @@ async function generateGemini(prompt) {
 }
 
 async function generateReplicate(prompt, aspect) {
-  const create = await fetch('https://api.replicate.com/v1/models/black-forest-labs/flux-1.1-pro/predictions', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${process.env.REPLICATE_API_TOKEN}`,
-      'Content-Type': 'application/json',
-      Prefer: 'wait',
-    },
-    body: JSON.stringify({ input: { prompt, aspect_ratio: ASPECT_SIZE[aspect].replicate, output_format: 'png' } }),
-  });
+  // Accounts without a payment method are throttled to 6 predictions/minute
+  // (burst 1). Retry on 429 using the server's retry_after rather than failing
+  // the whole run.
+  let create;
+  for (let attempt = 0; attempt < 8; attempt++) {
+    create = await fetch('https://api.replicate.com/v1/models/black-forest-labs/flux-1.1-pro/predictions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.REPLICATE_API_TOKEN}`,
+        'Content-Type': 'application/json',
+        Prefer: 'wait',
+      },
+      body: JSON.stringify({ input: { prompt, aspect_ratio: ASPECT_SIZE[aspect].replicate, output_format: 'png' } }),
+    });
+    if (create.status !== 429) break;
+    const body = await create.text();
+    const wait = Number(body.match(/"retry_after"\s*:\s*(\d+)/)?.[1] ?? 10) + 2;
+    process.stdout.write(`rate limited, waiting ${wait}s ... `);
+    await new Promise((r) => setTimeout(r, wait * 1000));
+  }
   if (!create.ok) throw new Error(`Replicate ${create.status}: ${(await create.text()).slice(0, 300)}`);
   let json = await create.json();
   for (let i = 0; i < 60 && json.status !== 'succeeded'; i++) {
@@ -345,6 +378,7 @@ async function main() {
     process.stdout.write(`  gen    ${entry.key} ... `);
     try {
       const buf = await GENERATORS[chosen](prompt, entry.aspect);
+      await new Promise((r) => setTimeout(r, 4000));
       writeFileSync(out, buf);
       made++;
       console.log(`ok (${Math.round(buf.length / 1024)} KB)`);
