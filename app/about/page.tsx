@@ -57,6 +57,35 @@ export default async function AboutPage() {
         </div>
       </div>
 
+      <section id="aim-physiotherapists" aria-labelledby="aim-physiotherapists-heading" className="bg-white py-12 sm:py-16">
+        <div className="mx-auto max-w-5xl px-6 lg:px-8">
+          <h2 id="aim-physiotherapists-heading" className="text-3xl font-bold text-aim-navy">AIM Physiotherapists</h2>
+          <p className="mt-3 text-aim-slate">Contact AIM to confirm clinician availability and appointment options.</p>
+          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+            <li className="rounded-lg border border-slate-200 p-5">
+              <Link href="#anand-jim-john-sylem" className="font-semibold text-aim-navy underline underline-offset-4">Anand Jim John Sylem, Physiotherapist</Link>
+            </li>
+            <li className="rounded-lg border border-slate-200 p-5"><Link href="#gunjan-soni" className="font-semibold text-aim-navy underline underline-offset-4">Gunjan Yashvantbhai Soni, Physiotherapist</Link></li>
+            <li className="rounded-lg border border-slate-200 p-5 font-semibold text-aim-navy">Hercules Grant, Physiotherapist</li>
+            <li className="rounded-lg border border-slate-200 p-5 font-semibold text-aim-navy">Kimoya Schannae Goslin, Physiotherapist</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="gunjan-soni" aria-labelledby="gunjan-soni-heading" className="bg-slate-50 py-12 sm:py-16">
+        <div className="mx-auto max-w-3xl px-6 lg:px-8">
+          <p className="text-sm font-semibold uppercase tracking-wide text-aim-slate">Clinician profile</p>
+          <h2 id="gunjan-soni-heading" className="mt-2 text-3xl font-bold text-aim-navy">Gunjan Yashvantbhai Soni, Physiotherapist</h2>
+          <p className="mt-4 leading-7 text-aim-slate">Gunjan Yashvantbhai Soni is a physiotherapist at Alberta Injury Management (AIM). He works with patients to understand how pain or injury affects their daily lives and builds treatment plans around the activities they want to get back to.</p>
+          <p className="mt-4 leading-7 text-aim-slate">Gunjan has experience supporting patients with musculoskeletal injuries, sports injuries, persistent pain, and recovery after surgery. Depending on the assessment and the patient’s goals, treatment may include hands-on therapy, therapeutic exercise, and education.</p>
+          <p className="mt-4 leading-7 text-aim-slate">He helps patients build confidence in movement and gives them practical exercises and strategies they can use between visits. He continues to develop his skills through professional education.</p>
+          <dl className="mt-6 space-y-3 text-aim-slate">
+            <div><dt className="inline font-semibold">Service:</dt> <dd className="inline">Physiotherapy</dd></div>
+            <div><dt className="inline font-semibold">Language:</dt> <dd className="inline">English</dd></div>
+          </dl>
+        </div>
+      </section>
+
       <section id="anand-jim-john-sylem" aria-labelledby="persistent-pain-clinician" className="bg-slate-50 py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-6 lg:px-8">
           <p className="text-sm font-semibold uppercase tracking-wide text-aim-slate">Clinician profile</p>
