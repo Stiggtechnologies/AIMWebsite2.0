@@ -201,24 +201,69 @@ async function generateOpenAI(prompt, aspect) {
   return Buffer.from(json.data[0].b64_json, 'base64');
 }
 
+// Image models in preference order. The lineup moves quickly — 2.5-flash-image
+// is already closed to new projects — so try current names first and fall back.
+const GEMINI_IMAGE_MODELS = [
+  'gemini-3.1-flash-image',
+  'gemini-3-pro-image',
+  'gemini-2.5-flash-image',
+];
+
+let geminiModel = null;
+
+function explainGeminiError(status, body) {
+  try {
+    const err = JSON.parse(body).error ?? {};
+    const violations = (err.details ?? []).flatMap((d) => d.violations ?? []);
+    const quota = violations.find((v) => /PerDay/i.test(v.quotaId ?? ''));
+    const retry = (err.details ?? []).find((d) => d.retryDelay)?.retryDelay;
+    if (status === 429) {
+      const hours = retry ? Math.round(parseInt(retry, 10) / 3600) : null;
+      return (
+        `quota exhausted${quota ? ` (${quota.description})` : ''}. ` +
+        (hours ? `Resets in ~${hours}h. ` : '') +
+        'Image generation is not available on the free tier — enable billing on the ' +
+        'project linked to this key (Google Cloud console -> Billing), or use OPENAI_API_KEY / ' +
+        'REPLICATE_API_TOKEN.'
+      );
+    }
+    return `${err.status ?? status}: ${(err.message ?? body).split('\n')[0].slice(0, 200)}`;
+  } catch {
+    return `${status}: ${body.slice(0, 200)}`;
+  }
+}
+
 async function generateGemini(prompt) {
   const key = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent`,
-    {
-      method: 'POST',
-      headers: { 'x-goog-api-key': key, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseModalities: ['IMAGE'] },
-      }),
+  const models = geminiModel ? [geminiModel] : GEMINI_IMAGE_MODELS;
+  let lastError = '';
+
+  for (const model of models) {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      {
+        method: 'POST',
+        headers: { 'x-goog-api-key': key, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ['IMAGE'] },
+        }),
+      }
+    );
+
+    if (res.ok) {
+      const json = await res.json();
+      const part = json.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
+      if (!part) throw new Error('Gemini returned no image part');
+      geminiModel = model;
+      return Buffer.from(part.inlineData.data, 'base64');
     }
-  );
-  if (!res.ok) throw new Error(`Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`);
-  const json = await res.json();
-  const part = json.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
-  if (!part) throw new Error('Gemini returned no image part');
-  return Buffer.from(part.inlineData.data, 'base64');
+
+    lastError = `${model}: ${explainGeminiError(res.status, await res.text())}`;
+    // 429 is account-wide, not model-specific — no point trying the next name.
+    if (res.status === 429) throw new Error(lastError);
+  }
+  throw new Error(lastError);
 }
 
 async function generateReplicate(prompt, aspect) {

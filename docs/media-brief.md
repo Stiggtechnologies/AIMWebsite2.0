@@ -148,6 +148,20 @@ exterior, reception, treatment room, team corridor, Edmonton streetscape. They a
 share one style block (documentary, natural daylight, navy/teal palette, no text or
 logos) so the outputs grade consistently with the sourced library.
 
+### When generation fails
+
+- **`quota exhausted ... Free Tier`** — image generation is a paid feature. The
+  free tier's daily image quota is either zero or already spent, and the API
+  reports a reset time. Enable billing on the Google Cloud project linked to the
+  key (Cloud console -> Billing -> link the project), then re-run.
+- **`model ... is no longer available to new users`** — the image lineup moves
+  fast. Add the current model name to `GEMINI_IMAGE_MODELS` at the top of the
+  Gemini provider in `scripts/generate-media.mjs`.
+- **429 on a paid account** — the per-minute limit. Wait a minute and re-run with
+  `--only=<frame>` for the ones that failed; `--force` regenerates one that exists.
+
+Existing masters are skipped, so a partial run costs only the missing frames.
+
 ### What happens before the generator runs
 
 The optional slots do not exist. `build-media.py` skips them with a message,
