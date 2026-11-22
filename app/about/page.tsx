@@ -64,22 +64,25 @@ export default async function AboutPage() {
           <h3 className="mt-6 text-2xl font-semibold text-aim-navy">Persistent Pain Physiotherapy</h3>
           <p className="mt-2 font-medium text-aim-navy">Helping You Understand Your Pain, Build Confidence, and Improve Your Quality of Life</p>
           <p className="mt-4 leading-7 text-aim-slate">Are you living with persistent musculoskeletal pain that has not improved despite trying different treatments? Perhaps pain is affecting your sleep, work, mood, or ability to enjoy everyday activities.</p>
-          <p className="mt-4 leading-7 text-aim-slate">I provide individualized physiotherapy for people experiencing ongoing pain who feel frustrated, uncertain, or limited in what they can do. My goal is to help you better understand your pain, build confidence in movement, and improve your ability to participate in activities that matter most to you.</p>
+          <p className="mt-4 leading-7 text-aim-slate">I provide individualized physiotherapy for people experiencing ongoing pain who feel frustrated, uncertain, or limited in what they can do. My goal is to help you better understand your symptoms, build confidence in movement, and improve your ability to participate in activities that matter most to you.</p>
           <h3 className="mt-8 text-xl font-semibold text-aim-navy">My Approach</h3>
-          <p className="mt-4 leading-7 text-aim-slate">I have completed formal training in Cognitive Functional Therapy (CFT), a person-centred approach used in the management of persistent musculoskeletal pain.</p>
-          <p className="mt-4 leading-7 text-aim-slate">CFT recognizes that pain is complex and can be influenced by physical, psychological, and lifestyle factors. Rather than focusing solely on where you hurt, we explore your pain experience, movement patterns, daily activities, and factors that may be contributing to ongoing symptoms and limitations.</p>
+          <p className="mt-4 leading-7 text-aim-slate">I have completed coursework in Cognitive Functional Therapy (CFT), a person-centred approach used in the management of persistent musculoskeletal pain.</p>
+          <p className="mt-4 leading-7 text-aim-slate">CFT recognizes that pain is complex and can be influenced by a combination of physical, psychological, and lifestyle factors. Rather than focusing solely on where you hurt, we explore your individual experience, movement patterns, daily activities, and factors that may be contributing to ongoing symptoms and limitations.</p>
           <p className="mt-4 leading-7 text-aim-slate">Your care begins with a comprehensive assessment to understand your pain history, previous treatments, functional abilities, and personal goals.</p>
           <p className="mt-4 leading-7 text-aim-slate">Together, we develop an individualized treatment plan that may include:</p>
           <ul className="mt-4 list-disc space-y-3 pl-6 leading-7 text-aim-slate">
-            <li><strong>Pain Education:</strong> Understanding your symptoms and factors that may influence your pain.</li>
+            <li><strong>Making Sense of Your Symptoms:</strong> Exploring your pain experience and identifying factors that may influence your symptoms.</li>
             <li><strong>Movement Retraining:</strong> Gradually building confidence in movements and activities that have become painful or difficult.</li>
             <li><strong>Personalized Exercise:</strong> Improving strength, movement, and tolerance for everyday activities.</li>
-            <li><strong>Self-Management Strategies:</strong> Learning practical approaches to managing flare-ups, pacing activities, and supporting ongoing participation in daily life.</li>
+            <li><strong>Self-Management Strategies:</strong> Developing practical approaches to managing flare-ups, pacing activities, and supporting participation in daily life.</li>
           </ul>
           <h3 className="mt-8 text-xl font-semibold text-aim-navy">Take the Next Step</h3>
           <p className="mt-4 leading-7 text-aim-slate">My focus is on helping you develop the understanding, confidence, and practical skills to manage persistent pain and improve your daily function.</p>
           <p className="mt-4 leading-7 text-aim-slate">If ongoing pain is limiting your activities, I welcome the opportunity to work with you to explore strategies that support your individual goals.</p>
-          <p className="mt-4 leading-7 text-aim-slate">Ready to take the next step? <Link href="/book" className="font-semibold text-aim-navy underline underline-offset-4">Book a Persistent Pain Physiotherapy Assessment</Link> at Alberta Injury Management (AIM) to discuss your concerns, explore your treatment options, and develop a plan tailored to your needs.</p>
+          <p className="mt-4 leading-7 text-aim-slate">Ready to take the next step? Book a Persistent Pain Physiotherapy Assessment at Alberta Injury Management (AIM) to discuss your concerns and develop a personalized plan tailored to your needs.</p>
+          <Link href="/book" className="mt-6 inline-flex min-h-[44px] items-center rounded-md bg-aim-navy px-5 py-3 font-semibold text-white transition-colors hover:bg-aim-navy/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-aim-navy">
+            Book an Appointment
+          </Link>
         </div>
       </section>
 
