@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { LazyChatWidget } from '@/components/ai/lazy-chat-widget';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertTriangle, Star } from 'lucide-react';
@@ -55,6 +56,32 @@ export default async function AboutPage() {
           </div>
         </div>
       </div>
+
+      <section id="anand-jim-john-sylem" aria-labelledby="persistent-pain-clinician" className="bg-slate-50 py-16 sm:py-20">
+        <div className="mx-auto max-w-3xl px-6 lg:px-8">
+          <p className="text-sm font-semibold uppercase tracking-wide text-aim-slate">Clinician profile</p>
+          <h2 id="persistent-pain-clinician" className="mt-2 text-3xl font-bold text-aim-navy">Anand Jim John Sylem, PT</h2>
+          <h3 className="mt-6 text-2xl font-semibold text-aim-navy">Persistent Pain Physiotherapy</h3>
+          <p className="mt-2 font-medium text-aim-navy">Helping You Understand Your Pain, Build Confidence, and Improve Your Quality of Life</p>
+          <p className="mt-4 leading-7 text-aim-slate">Are you living with persistent musculoskeletal pain that has not improved despite trying different treatments? Perhaps pain is affecting your sleep, work, mood, or ability to enjoy everyday activities.</p>
+          <p className="mt-4 leading-7 text-aim-slate">I provide individualized physiotherapy for people experiencing ongoing pain who feel frustrated, uncertain, or limited in what they can do. My goal is to help you better understand your pain, build confidence in movement, and improve your ability to participate in activities that matter most to you.</p>
+          <h3 className="mt-8 text-xl font-semibold text-aim-navy">My Approach</h3>
+          <p className="mt-4 leading-7 text-aim-slate">I have completed formal training in Cognitive Functional Therapy (CFT), a person-centred approach used in the management of persistent musculoskeletal pain.</p>
+          <p className="mt-4 leading-7 text-aim-slate">CFT recognizes that pain is complex and can be influenced by physical, psychological, and lifestyle factors. Rather than focusing solely on where you hurt, we explore your pain experience, movement patterns, daily activities, and factors that may be contributing to ongoing symptoms and limitations.</p>
+          <p className="mt-4 leading-7 text-aim-slate">Your care begins with a comprehensive assessment to understand your pain history, previous treatments, functional abilities, and personal goals.</p>
+          <p className="mt-4 leading-7 text-aim-slate">Together, we develop an individualized treatment plan that may include:</p>
+          <ul className="mt-4 list-disc space-y-3 pl-6 leading-7 text-aim-slate">
+            <li><strong>Pain Education:</strong> Understanding your symptoms and factors that may influence your pain.</li>
+            <li><strong>Movement Retraining:</strong> Gradually building confidence in movements and activities that have become painful or difficult.</li>
+            <li><strong>Personalized Exercise:</strong> Improving strength, movement, and tolerance for everyday activities.</li>
+            <li><strong>Self-Management Strategies:</strong> Learning practical approaches to managing flare-ups, pacing activities, and supporting ongoing participation in daily life.</li>
+          </ul>
+          <h3 className="mt-8 text-xl font-semibold text-aim-navy">Take the Next Step</h3>
+          <p className="mt-4 leading-7 text-aim-slate">My focus is on helping you develop the understanding, confidence, and practical skills to manage persistent pain and improve your daily function.</p>
+          <p className="mt-4 leading-7 text-aim-slate">If ongoing pain is limiting your activities, I welcome the opportunity to work with you to explore strategies that support your individual goals.</p>
+          <p className="mt-4 leading-7 text-aim-slate">Ready to take the next step? <Link href="/book" className="font-semibold text-aim-navy underline underline-offset-4">Book a Persistent Pain Physiotherapy Assessment</Link> at Alberta Injury Management (AIM) to discuss your concerns, explore your treatment options, and develop a plan tailored to your needs.</p>
+        </div>
+      </section>
 
       {transparencyReview && (
         <div className="bg-aim-steel-blue py-16 sm:py-24">
