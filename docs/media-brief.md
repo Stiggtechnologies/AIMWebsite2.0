@@ -218,6 +218,26 @@ Notes for the shoot:
 
 No page component needs to change.
 
+## Social share cards
+
+`scripts/build-og.py` renders the 1200x630 cards used for `og:image` and
+`twitter:image`: one default, one per programme, one for the South Common
+landing page, plus the favicon and apple-touch-icon. Same palette and photo
+library as the site, so a shared link looks like the page.
+
+```bash
+npm run og:build
+```
+
+**The card headline is baked into the JPEG.** Re-run this whenever a page
+headline or the logo changes, or a shared link will advertise copy that no longer
+exists on the page. Wire it into the pre-deploy step if that becomes a nuisance.
+
+Before this, the site had no `og:image` at all: every link shared to LinkedIn,
+Facebook, WhatsApp or iMessage rendered a blank card. `/aim-performance-south-common`
+also pointed at `/images/aim-performance-south-common-og.jpg`, which never
+existed — a 404 share image on a paid landing page.
+
 ## Accessibility
 
 - Alt text describes the frame, not the brand: "A physiotherapist assessing a

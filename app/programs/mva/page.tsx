@@ -10,6 +10,17 @@ import { programImage } from '@/lib/media';
 export const metadata = {
   title: 'MVA Recovery Program | Alberta Injury Management',
   description: 'Motor vehicle accident recovery in Alberta. Direct insurance billing for whiplash, soft tissue injuries, and post-concussion care.',
+  openGraph: {
+    title: 'MVA Recovery Program | Alberta Injury Management',
+    description: 'Motor vehicle accident recovery in Alberta. Direct insurance billing for whiplash, soft tissue injuries, and post-concussion care.',
+    images: [{ url: '/og/mva.jpg', width: 1200, height: 630, alt: 'A physiotherapist guiding a patient through a shoulder assessment.' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'MVA Recovery Program | Alberta Injury Management',
+    description: 'Motor vehicle accident recovery in Alberta. Direct insurance billing for whiplash, soft tissue injuries, and post-concussion care.',
+    images: ['/og/mva.jpg'],
+  },
 };
 
 export default function MVAProgramPage() {

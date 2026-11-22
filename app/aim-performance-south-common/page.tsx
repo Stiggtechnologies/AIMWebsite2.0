@@ -36,7 +36,7 @@ import { RegistrationPaused } from './registration-paused';
 // authorization), invented testimonials, or outcome claims.
 //
 // TODOs (separate work):
-//   - /images/aim-performance-south-common-og.jpg (branded OG image)
+//   - /og/south-common.jpg (branded OG image)
 //   - app/aim-performance-south-common/thank-you/page.tsx (clean
 //     conversion landing URL for Google Ads / Meta / GA4)
 
@@ -77,14 +77,14 @@ export const metadata: Metadata = {
     title: 'AIM Performance South Common',
     description:
       'Physiotherapy-led recovery, movement, and performance care inside Evolve Strength South Common.',
-    images: [{ url: '/images/aim-performance-south-common-og.jpg' }],
+    images: [{ url: '/og/south-common.jpg' }],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'AIM Performance South Common',
     description:
       'Physiotherapy-led recovery, movement, and performance care inside Evolve Strength South Common.',
-    images: ['/images/aim-performance-south-common-og.jpg'],
+    images: ['/og/south-common.jpg'],
   },
 };
 

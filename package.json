@@ -15,7 +15,8 @@
     "check:copy": "node scripts/check-advertising-copy.mjs",
     "media:build": "python3 scripts/build-media.py",
     "verify": "npm run check:copy && npm run typecheck",
-    "media:generate": "node scripts/generate-media.mjs"
+    "media:generate": "node scripts/generate-media.mjs",
+    "og:build": "python3 scripts/build-og.py"
   },
   "devDependencies": {
     "@types/nodemailer": "^8.0.1",

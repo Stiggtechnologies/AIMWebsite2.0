@@ -11,6 +11,17 @@ import { programImage } from '@/lib/media';
 export const metadata = {
   title: 'WCB Rehabilitation Program | Alberta Injury Management',
   description: 'WCB rehabilitation and return-to-work programs in Alberta. Direct billing, outcome-based treatment, and employer coordination for workplace injuries.',
+  openGraph: {
+    title: 'WCB Rehabilitation Program | Alberta Injury Management',
+    description: 'WCB rehabilitation and return-to-work programs in Alberta. Direct billing, outcome-based treatment, and employer coordination for workplace injuries.',
+    images: [{ url: '/og/wcb.jpg', width: 1200, height: 630, alt: 'A clinician reviewing a return-to-work plan with two workers on a warehouse floor.' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'WCB Rehabilitation Program | Alberta Injury Management',
+    description: 'WCB rehabilitation and return-to-work programs in Alberta. Direct billing, outcome-based treatment, and employer coordination for workplace injuries.',
+    images: ['/og/wcb.jpg'],
+  },
 };
 
 export default function WCBProgramPage() {

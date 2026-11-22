@@ -11,6 +11,17 @@ import { programImage } from '@/lib/media';
 export const metadata = {
   title: 'Senior Mobility & Fall Prevention | Alberta Injury Management',
   description: 'Mobility programs for seniors in Alberta. Balance training, fall prevention, and strength programs to maintain independence and quality of life.',
+  openGraph: {
+    title: 'Senior Mobility & Fall Prevention | Alberta Injury Management',
+    description: 'Mobility programs for seniors in Alberta. Balance training, fall prevention, and strength programs to maintain independence and quality of life.',
+    images: [{ url: '/og/senior.jpg', width: 1200, height: 630, alt: 'Alberta Injury Management senior mobility and fall prevention program.' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Senior Mobility & Fall Prevention | Alberta Injury Management',
+    description: 'Mobility programs for seniors in Alberta. Balance training, fall prevention, and strength programs to maintain independence and quality of life.',
+    images: ['/og/senior.jpg'],
+  },
 };
 
 export default function SeniorProgramPage() {

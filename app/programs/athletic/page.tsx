@@ -11,6 +11,17 @@ import { programImage } from '@/lib/media';
 export const metadata = {
   title: 'Athletic Performance Program | Alberta Injury Management',
   description: 'Sport-specific rehabilitation and performance optimization for athletes. Injury prevention, recovery, and performance enhancement programs in Alberta.',
+  openGraph: {
+    title: 'Athletic Performance Program | Alberta Injury Management',
+    description: 'Sport-specific rehabilitation and performance optimization for athletes. Injury prevention, recovery, and performance enhancement programs in Alberta.',
+    images: [{ url: '/og/athletic.jpg', width: 1200, height: 630, alt: 'An athlete during a sport rehabilitation assessment.' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Athletic Performance Program | Alberta Injury Management',
+    description: 'Sport-specific rehabilitation and performance optimization for athletes. Injury prevention, recovery, and performance enhancement programs in Alberta.',
+    images: ['/og/athletic.jpg'],
+  },
 };
 
 export default function AthleticProgramPage() {
