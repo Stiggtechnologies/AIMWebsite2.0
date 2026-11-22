@@ -26,7 +26,37 @@ export type MediaAsset = {
 
 export const MEDIA = generated as Record<string, MediaAsset>;
 
-export type MediaSlot = keyof typeof generated;
+/**
+ * Slots that only exist once `scripts/generate-media.mjs` has produced a master.
+ * They are optional so the site builds and renders before anyone has run the
+ * generator: pages fall back to a brand panel rather than a broken image.
+ */
+export const OPTIONAL_SLOTS = [
+  'senior-hero',
+  'senior-wide',
+  'senior-card',
+  'sport-hero',
+  'sport-wide',
+  'sport-card',
+  'massage-wide',
+  'massage-card',
+  'vestibular-wide',
+  'pelvic-wide',
+  'reception-wide',
+  'reception-card',
+  'treatment-wide',
+  'treatment-card',
+  'team-wide',
+  'streetscape-wide',
+] as const;
+
+export type OptionalSlot = (typeof OPTIONAL_SLOTS)[number];
+export type MediaSlot = keyof typeof generated | OptionalSlot;
+
+/** True once the slot has a generated file on disk. */
+export function hasImage(slot: MediaSlot): boolean {
+  return Boolean(MEDIA[slot]);
+}
 
 /** A resolved image ready for <SiteImage>. */
 export type SlotImage = {
@@ -60,6 +90,23 @@ const ALT: Record<MediaSlot, string> = {
   'legal-wide': 'A clinical team meeting with legal counsel around a boardroom table.',
   'legal-card': 'A case review meeting between a clinical team and legal counsel.',
   'legal-portrait': 'A legal and clinical case review meeting.',
+  // --- generated (present only after scripts/generate-media.mjs has run) ---
+  'senior-hero': 'A physiotherapist standing beside an older adult practising single-leg balance, with a walking stick nearby.',
+  'senior-wide': 'A clinician guarding an older adult during a balance exercise in a treatment room.',
+  'senior-card': 'An older adult working on balance with a clinician close by.',
+  'sport-hero': 'A physiotherapist timing a single-leg hop test for an athlete on a gym floor.',
+  'sport-wide': 'A clinician assessing an athlete’s jump landing in a gym.',
+  'sport-card': 'An athlete landing a single-leg hop during a return-to-sport test.',
+  'massage-wide': 'A massage therapist treating a client’s shoulder on a treatment table.',
+  'massage-card': 'A draped client receiving shoulder massage therapy.',
+  'vestibular-wide': 'A clinician guiding a seated patient through a gaze-stabilisation exercise.',
+  'pelvic-wide': 'Two people talking in a private consultation room.',
+  'reception-wide': 'An empty clinic reception with a counter, chairs and a plant.',
+  'reception-card': 'A clinic waiting area with seating and a low table.',
+  'treatment-wide': 'An empty treatment room with a raised table, stool and resistance bands.',
+  'treatment-card': 'A treatment table and equipment in a clinic room.',
+  'team-wide': 'Three clinicians talking in a clinic corridor.',
+  'streetscape-wide': 'A quiet Edmonton street in winter with low-rise buildings.',
 };
 
 export function altFor(slot: MediaSlot): string {
@@ -79,15 +126,17 @@ export function image(slot: MediaSlot, overrides: Partial<SlotImage> = {}): Slot
 /** Program pages. `null` means no suitable frame exists yet — render the brand
  *  panel instead of an unrelated photo (see MediaPanel). */
 export const PROGRAM_IMAGES: Record<string, SlotImage | null> = {
+  // `senior` is resolved in programImage() because its frame is generated.
   wcb: image('work-hero'),
   mva: image('assess-hero'),
   athletic: image('assess-portrait'),
-  // No age-appropriate frame in the interim library. The shoot brief lists
-  // "senior balance training, clinician guarding" as priority frame #3.
   senior: null,
 };
 
 export function programImage(slug: string): SlotImage | null {
+  // Senior mobility has no frame in the sourced library. Use the generated one
+  // once it exists; until then the page renders a brand panel.
+  if (slug === 'senior') return hasImage('senior-hero') ? image('senior-hero') : null;
   return PROGRAM_IMAGES[slug] ?? null;
 }
 
@@ -103,7 +152,15 @@ const WORK_SERVICES = new Set([
 
 const REFERRAL_SERVICES = new Set<string>([]);
 
+const GENERATED_SERVICE_SLOTS: Record<string, OptionalSlot> = {
+  'massage-therapy': 'massage-wide',
+  'vestibular-rehabilitation': 'vestibular-wide',
+  'pelvic-floor-physiotherapy': 'pelvic-wide',
+};
+
 export function serviceImage(slug: string): SlotImage {
+  const generated = GENERATED_SERVICE_SLOTS[slug];
+  if (generated && hasImage(generated)) return image(generated);
   if (WORK_SERVICES.has(slug)) return image('work-wide');
   if (REFERRAL_SERVICES.has(slug)) return image('refer-wide');
   return image('assess-wide');

@@ -42,6 +42,20 @@ SOURCES = {
     "refer": "public/partners/healthcare-referrers-hero.webp",
     # clinical team meeting with legal counsel
     "legal": "public/partners/legal-referrals-hero.webp",
+    # --- generated masters (scripts/generate-media.mjs) ---------------------
+    # Optional: absent until someone runs the generator with an API key. When
+    # missing, the slots that depend on them are skipped and the site keeps
+    # using the brand panel, which is the honest fallback.
+    "senior": "public/source/generated/senior.png",
+    "sport": "public/source/generated/sport.png",
+    "massage": "public/source/generated/massage.png",
+    "vestibular": "public/source/generated/vestibular.png",
+    "pelvic": "public/source/generated/pelvic.png",
+    "facility": "public/source/generated/facility.png",
+    "reception": "public/source/generated/reception.png",
+    "treatment-room": "public/source/generated/treatment-room.png",
+    "team": "public/source/generated/team.png",
+    "streetscape": "public/source/generated/streetscape.png",
 }
 
 
@@ -82,6 +96,23 @@ SLOTS: dict[str, Slot] = {
     "legal-wide": Slot("legal", 16 / 9, (0.50, 0.50), 1600),
     "legal-card": Slot("legal", 4 / 3, (0.50, 0.50), 960),
     "legal-portrait": Slot("legal", 3 / 4, (0.50, 0.45), 900),
+    # --- generated subjects (only produced when the generator has run) ----
+    "senior-hero": Slot("senior", 4 / 5, (0.50, 0.45), 960),
+    "senior-wide": Slot("senior", 16 / 9, (0.50, 0.45), 1400),
+    "senior-card": Slot("senior", 4 / 3, (0.50, 0.45), 960),
+    "sport-hero": Slot("sport", 4 / 5, (0.50, 0.42), 960),
+    "sport-wide": Slot("sport", 16 / 9, (0.50, 0.45), 1400),
+    "sport-card": Slot("sport", 4 / 3, (0.50, 0.45), 960),
+    "massage-wide": Slot("massage", 16 / 9, (0.50, 0.50), 1400),
+    "massage-card": Slot("massage", 4 / 3, (0.50, 0.50), 960),
+    "vestibular-wide": Slot("vestibular", 16 / 9, (0.50, 0.48), 1400),
+    "pelvic-wide": Slot("pelvic", 16 / 9, (0.50, 0.50), 1400),
+    "reception-wide": Slot("reception", 16 / 9, (0.50, 0.50), 1400),
+    "reception-card": Slot("reception", 4 / 3, (0.50, 0.50), 960),
+    "treatment-wide": Slot("treatment-room", 16 / 9, (0.50, 0.50), 1400),
+    "treatment-card": Slot("treatment-room", 4 / 3, (0.50, 0.50), 960),
+    "team-wide": Slot("team", 16 / 9, (0.50, 0.45), 1400),
+    "streetscape-wide": Slot("streetscape", 16 / 9, (0.50, 0.50), 1400),
 }
 
 QUALITY = 84
@@ -161,9 +192,14 @@ def main() -> None:
     manifest: dict[str, dict] = {}
     total = 0
 
+    skipped = []
     for name, slot in SLOTS.items():
+        source_path = SOURCES.get(slot.source)
+        if not source_path or not os.path.exists(os.path.join(ROOT, source_path)):
+            skipped.append(f"{name} ({slot.source})")
+            continue
         if slot.source not in cache:
-            cache[slot.source] = load_source(SOURCES[slot.source])
+            cache[slot.source] = load_source(source_path)
         src = cache[slot.source]
 
         cropped = crop_to_ratio(src, slot.ratio, slot.focus)
@@ -181,6 +217,12 @@ def main() -> None:
     with open(MANIFEST, "w", encoding="utf-8") as fh:
         json.dump(manifest, fh, indent=2, sort_keys=True)
         fh.write("\n")
+
+    if skipped:
+        print(f"\nskipped {len(skipped)} slot(s) with no source master:")
+        for item in skipped:
+            print(f"  - {item}")
+        print("  (run `node scripts/generate-media.mjs` with an API key to fill these)")
 
     print(f"\n{len(manifest)} slots, {total / 1024:.0f} KB total -> public/media/")
     print(f"manifest -> {os.path.relpath(MANIFEST, ROOT)}")

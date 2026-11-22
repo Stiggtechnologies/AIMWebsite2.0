@@ -127,6 +127,48 @@ Full detail in [`advertising-compliance.md`](./advertising-compliance.md). In sh
   attach a claim to a photo.
 - **Disclosed as illustrative** in the footer and on `/ai-disclosure`.
 
+## Generating interim frames (no shoot required)
+
+There is no local image model on this machine and no key committed to the repo, so
+generation is a one-command step you run when you are ready to spend a few dollars.
+
+```bash
+export OPENAI_API_KEY=sk-...        # or GEMINI_API_KEY, or REPLICATE_API_TOKEN
+node scripts/generate-media.mjs     # ~10 frames, roughly $1–2
+python3 scripts/build-media.py      # crop + grade into the existing slots
+npm run build
+```
+
+`npm run media:generate -- --dry-run` prints every prompt and the estimated cost
+without contacting any provider, so the prompts can be reviewed before spending.
+
+The ten prompts live in `scripts/generate-media.mjs` and cover the gap list:
+senior balance, return-to-sport testing, massage, vestibular, pelvic, clinic
+exterior, reception, treatment room, team corridor, Edmonton streetscape. They all
+share one style block (documentary, natural daylight, navy/teal palette, no text or
+logos) so the outputs grade consistently with the sourced library.
+
+### What happens before the generator runs
+
+The optional slots do not exist. `build-media.py` skips them with a message,
+`hasImage()` returns false, and the pages fall back to their brand panel or to the
+closest sourced frame. Nothing breaks, and nothing pretends a photo exists.
+
+### Compliance guardrail on generated images
+
+Each prompt carries a `usage` field, and three of the ten are deliberately
+restricted:
+
+| Frame | Rule |
+| --- | --- |
+| `facility`, `reception`, `treatment-room` | **Never captioned as an AIM clinic.** A generated building would be a misrepresentation. Review before use; a real photo per location is the correct answer. |
+| `team` | **Never used as "meet the team", never with names.** Framed from behind so faces are not identifiable. Real staff photos remain the correct answer. |
+| `streetscape` | Atmospheric band only; must not imply a specific clinic location. |
+
+The other frames are ordinary illustrative photography of the kind clinics routinely
+license, and are covered by the disclosure already in the footer and on
+`/ai-disclosure`.
+
 ## Shoot brief — the frames this system is waiting for
 
 The interim set covers assessment, return-to-work, referral and legal meeting
