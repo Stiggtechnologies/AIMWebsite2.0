@@ -55,7 +55,7 @@ export default function ContactPage({
             <strong>Employer Inquiries:</strong> Contact partnerships@albertainjurymanagement.ca to discuss workplace injury management, ergonomic assessment, or return-to-work programs.
           </p>
           <p>
-            <strong>Legal Referrals:</strong> Email legal@albertainjurymanagement.ca. We provide expert MVA rehabilitation and detailed medical documentation.
+            <strong>Legal Referrals:</strong> Email legal@albertainjurymanagement.ca. We provide MVA rehabilitation and detailed medical documentation.
           </p>
           <p>
             <strong>Partnership & Acquisition:</strong> Contact partnerships@albertainjurymanagement.ca to discuss clinic acquisition, employer partnerships, research collaboration, or technology partnerships.

@@ -4,44 +4,38 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { LazyChatWidget } from '@/components/ai/lazy-chat-widget';
+import { HeroBlock } from '@/components/blocks/hero-block';
+import { MediaPanel } from '@/components/media/site-image';
+import { programImage } from '@/lib/media';
 
 export const metadata = {
   title: 'WCB Rehabilitation Program | Alberta Injury Management',
-  description: 'Expert WCB rehabilitation and return-to-work programs in Alberta. Direct billing, outcome-based treatment, and employer coordination for workplace injuries.',
+  description: 'WCB rehabilitation and return-to-work programs in Alberta. Direct billing, outcome-based treatment, and employer coordination for workplace injuries.',
+  openGraph: {
+    title: 'WCB Rehabilitation Program | Alberta Injury Management',
+    description: 'WCB rehabilitation and return-to-work programs in Alberta. Direct billing, outcome-based treatment, and employer coordination for workplace injuries.',
+    images: [{ url: '/og/wcb.jpg', width: 1200, height: 630, alt: 'A clinician reviewing a return-to-work plan with two workers on a warehouse floor.' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'WCB Rehabilitation Program | Alberta Injury Management',
+    description: 'WCB rehabilitation and return-to-work programs in Alberta. Direct billing, outcome-based treatment, and employer coordination for workplace injuries.',
+    images: ['/og/wcb.jpg'],
+  },
 };
 
 export default function WCBProgramPage() {
   return (
     <>
-      <div className="bg-gradient-to-b from-aim-steel-blue to-white py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-aim-navy sm:text-5xl">
-              WCB Rehabilitation Program
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-aim-slate">
-              Get back to work safely and effectively with Alberta's trusted WCB rehabilitation partner.
-            </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Button
-                asChild
-                size="lg"
-                className="bg-aim-cta-primary hover:bg-aim-cta-primary/90 text-white"
-              >
-                <Link href="/intake">Start WCB Intake</Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="border-aim-navy text-aim-navy hover:bg-aim-steel-blue"
-              >
-                <Link href="/book">Book Assessment</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <HeroBlock
+        eyebrow="Program"
+        headline="WCB Rehabilitation Program"
+        subheadline="WCB rehabilitation and return-to-work support for injured workers across Alberta, with direct billing and employer coordination."
+        primaryCta={{ label: 'Start WCB Intake', href: '/intake' }}
+        secondaryCta={{ label: 'Book Assessment', href: '/book' }}
+        highlights={['Direct billing with WCB', 'Return-to-work coordination', 'Initial assessment within 24–48 hrs']}
+        image={programImage('wcb') ?? undefined}
+      />
 
       <div className="py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -91,7 +85,7 @@ export default function WCBProgramPage() {
             <Card>
               <CardHeader>
                 <CheckCircle className="h-10 w-10 text-aim-teal mb-4" aria-hidden="true" />
-                <CardTitle>Proven Outcomes</CardTitle>
+                <CardTitle>Tracked Outcomes</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
@@ -169,7 +163,7 @@ export default function WCBProgramPage() {
               <AccordionItem value="item-4">
                 <AccordionTrigger>What if I need to see a specialist?</AccordionTrigger>
                 <AccordionContent>
-                  If specialist consultation is needed, we'll coordinate referrals and continue supporting your rehabilitation throughout the process. We work collaboratively with orthopedic surgeons, pain specialists, and other healthcare providers.
+                  If specialist consultation is needed, we'll coordinate referrals and continue supporting your rehabilitation throughout the process. We work collaboratively with orthopedic surgeons, pain physicians, and other healthcare providers.
                 </AccordionContent>
               </AccordionItem>
 

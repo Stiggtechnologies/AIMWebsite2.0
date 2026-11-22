@@ -85,7 +85,7 @@ export default function BookPage() {
               Book Your Appointment
             </h1>
             <p className="mt-6 text-lg leading-8 text-aim-slate">
-              Get expert care when you need it. Most appointments available within 24-48 hours.
+              Get care when you need it. Most appointments available within 24-48 hours.
             </p>
           </div>
         </div>
@@ -162,7 +162,7 @@ export default function BookPage() {
                   <Calendar className="h-10 w-10 text-aim-teal mb-4" />
                   <CardTitle>Employer or Case Manager Inquiry</CardTitle>
                   <CardDescription>
-                    If you're an employer or case manager, use our specialized contact form to coordinate services.
+                    If you're an employer or case manager, use our employer and case manager contact form to coordinate services.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col justify-end">

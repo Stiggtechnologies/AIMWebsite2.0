@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { LazyChatWidget } from '@/components/ai/lazy-chat-widget';
+import { MediaSplit } from '@/components/media/site-image';
+import { image } from '@/lib/media';
 
 export const metadata = {
   title: 'How to Get Care | Alberta Injury Management',
-  description: 'Learn how to access expert physiotherapy and rehabilitation services at AIM. Simple steps to start your recovery journey.',
+  description: 'Learn how to access physiotherapy and rehabilitation services at AIM. Simple steps to start your recovery journey.',
 };
 
 export default function GetCarePage() {
@@ -23,7 +25,26 @@ export default function GetCarePage() {
         </div>
       </div>
 
-      <div className="py-16 sm:py-24">
+      <div className="pt-16 pb-8 sm:pt-24 sm:pb-10">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <MediaSplit image={image('refer-wide')} ratio="4/3">
+            <p className="text-sm font-semibold uppercase tracking-wider text-aim-teal">Before your first visit</p>
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-aim-navy md:text-4xl">
+              Four steps, no runaround
+            </h2>
+            <p className="mt-5 text-lg leading-relaxed text-aim-slate">
+              Call, complete intake, get assessed, start treatment. We confirm coverage and
+              paperwork before the first appointment so the visit is about your injury.
+            </p>
+            <ul className="mt-6 space-y-3 text-base leading-relaxed text-aim-slate/85">
+              <li className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-aim-teal" aria-hidden="true" />Most people are offered an appointment within 24–48 hours.</li>
+              <li className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-aim-teal" aria-hidden="true" />We bill WCB and auto insurers directly for covered claims.</li>
+            </ul>
+          </MediaSplit>
+        </div>
+      </div>
+
+      <div className="pb-16 pt-8 sm:pb-24 sm:pt-10">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-3xl space-y-12">
             <div className="flex gap-6">

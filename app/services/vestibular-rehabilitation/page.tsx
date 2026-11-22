@@ -7,7 +7,7 @@ const SLUG = 'vestibular-rehabilitation';
 
 export const metadata = buildMetadata({
   title: 'Vestibular Rehabilitation',
-  description: 'Expert treatment for BPPV, dizziness, vertigo, and balance disorders. Regain confidence in movement and everyday activities.',
+  description: 'Treatment for BPPV, dizziness, vertigo, and balance disorders. Regain confidence in movement and everyday activities.',
   path: `/services/${SLUG}`,
 });
 

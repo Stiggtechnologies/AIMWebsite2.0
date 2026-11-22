@@ -4,7 +4,7 @@ import { LazyChatWidget } from '@/components/ai/lazy-chat-widget';
 
 export const metadata = {
   title: 'For Insurance Providers | Alberta Injury Management',
-  description: 'Trusted rehabilitation partner for insurance providers. Quality care, comprehensive reporting, and proven outcomes.',
+  description: 'Trusted rehabilitation partner for insurance providers. Quality care, comprehensive reporting, and tracked outcomes.',
 };
 
 export default function InsurersPage() {

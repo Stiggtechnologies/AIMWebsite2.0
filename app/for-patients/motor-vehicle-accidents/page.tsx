@@ -76,7 +76,7 @@ export default function MotorVehicleAccidentsPage() {
           <div className="rounded-lg bg-white p-6">
             <h3 className="mb-3 text-lg font-semibold text-aim-navy">Concussion & Head Injuries</h3>
             <p className="text-aim-slate/85">
-              MVA concussions require specialized assessment and management. We work with physicians to monitor symptoms and safely progress recovery through vestibular rehabilitation if needed.
+              MVA concussions require focused assessment and management. We work with physicians to monitor symptoms and safely progress recovery through vestibular rehabilitation if needed.
             </p>
           </div>
           <div className="rounded-lg bg-white p-6">

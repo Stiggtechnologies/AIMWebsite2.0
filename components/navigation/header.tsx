@@ -28,13 +28,13 @@ export function Header() {
               alt="Alberta Injury Management Logo"
               width={260}
               height={87}
-              className="h-20 w-auto"
+              className="h-12 w-auto sm:h-14 xl:h-16"
               priority
             />
           </Link>
         </div>
 
-        <div className="flex lg:hidden">
+        <div className="flex xl:hidden">
           <button
             type="button"
             className="inline-flex items-center justify-center rounded-md p-2.5 text-gray-700 hover:bg-gray-100"
@@ -45,7 +45,7 @@ export function Header() {
           </button>
         </div>
 
-        <div className="hidden lg:flex lg:flex-1 lg:items-center lg:gap-x-5 xl:gap-x-6">
+        <div className="hidden min-w-0 xl:flex xl:flex-1 xl:items-center xl:gap-x-4 2xl:gap-x-6">
           <Link
             href="/get-care"
             className="text-sm font-medium leading-6 text-aim-slate hover:text-aim-teal transition-colors whitespace-nowrap"
@@ -180,27 +180,36 @@ export function Header() {
           >
             Locations
           </Link>
-          <Link
-            href="/for-employers"
-            className="text-sm font-medium leading-6 text-aim-slate hover:text-aim-teal transition-colors whitespace-nowrap"
-          >
-            For Employers
-          </Link>
-          <Link
-            href="/resources"
-            className="text-sm font-medium leading-6 text-aim-slate hover:text-aim-teal transition-colors whitespace-nowrap"
-          >
-            Resources
-          </Link>
-          <Link
-            href="/about"
-            className="text-sm font-medium leading-6 text-aim-slate hover:text-aim-teal transition-colors whitespace-nowrap"
-          >
-            About
-          </Link>
+          {/* The header needs ~1570px to fit every link at text-sm. Grouping the
+              three lowest-intent links keeps all pages reachable without the row
+              overflowing its 1280px container (it used to scroll the whole page
+              sideways on a 1440 laptop). */}
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-1 whitespace-nowrap text-sm font-medium leading-6 text-aim-slate transition-colors hover:text-aim-teal focus:outline-none focus-visible:ring-2 focus-visible:ring-aim-teal focus-visible:ring-offset-2">
+              More
+              <ChevronDown className="h-4 w-4" aria-hidden="true" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuItem asChild>
+                <Link href="/for-employers" className="w-full cursor-pointer">
+                  For Employers
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/resources" className="w-full cursor-pointer">
+                  Resources
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/about" className="w-full cursor-pointer">
+                  About
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
-        <div className="hidden lg:flex lg:items-center lg:justify-end lg:gap-x-3 lg:ml-6">
+        <div className="hidden xl:flex xl:items-center xl:justify-end xl:gap-x-3 xl:ml-6">
           <Button
             variant="outline"
             size="sm"
@@ -208,9 +217,9 @@ export function Header() {
             className="border-aim-navy text-aim-navy hover:bg-aim-steel-blue whitespace-nowrap"
           >
             <Link href={`tel:${CENTRAL_PHONE_TEL}`} className="flex items-center gap-1">
-              <Phone className="h-4 w-4" aria-hidden="true" />
-              <span className="sr-only">Call us at </span>
-              {CENTRAL_PHONE_DISPLAY}
+              <Phone className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <span className="sr-only">Call us at {CENTRAL_PHONE_DISPLAY}</span>
+              <span className="hidden xl:inline">{CENTRAL_PHONE_DISPLAY}</span>
             </Link>
           </Button>
           <Button
@@ -224,7 +233,7 @@ export function Header() {
       </nav>
 
       {mobileMenuOpen && (
-        <div className="lg:hidden">
+        <div className="xl:hidden">
           <div className="fixed inset-0 z-[60] bg-black/20" onClick={() => setMobileMenuOpen(false)} aria-hidden="true"></div>
           <div className="fixed inset-y-0 right-0 z-[70] w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
             <div className="flex items-center justify-between">

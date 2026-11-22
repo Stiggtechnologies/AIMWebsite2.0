@@ -7,7 +7,7 @@ import { generateMedicalBusinessSchema, injectSchema } from '@/lib/schema';
 
 export const metadata = {
   title: 'AIM Performance West - Edmonton | Alberta Injury Management',
-  description: 'AIM Performance West in Edmonton. Expert physiotherapy, WCB rehabilitation, and injury management services. Book your appointment today.',
+  description: 'AIM Performance West in Edmonton. Physiotherapy, WCB rehabilitation, and injury management services. Book your appointment today.',
 };
 
 export default function EdmontonWestLocationPage() {
@@ -32,7 +32,7 @@ export default function EdmontonWestLocationPage() {
   };
 
   const schema = generateMedicalBusinessSchema(location, {
-    description: 'Expert physiotherapy and injury management in West Edmonton',
+    description: 'Physiotherapy and injury management in West Edmonton',
     services: ['Physiotherapy', 'WCB Rehabilitation', 'MVA Recovery', 'Sports Rehabilitation'],
   });
 

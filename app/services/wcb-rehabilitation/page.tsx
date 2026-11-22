@@ -10,10 +10,12 @@ import { ServiceCTA } from '@/components/cta/service-cta';
 import { ReviewBlock } from '@/components/reviews/review-block';
 import { ReviewSchema } from '@/components/reviews/review-schema';
 import { supabase } from '@/lib/supabase';
+import { MediaSplit } from '@/components/media/site-image';
+import { image } from '@/lib/media';
 
 export const metadata = {
   title: 'WCB Physiotherapy & Rehabilitation | Alberta Injury Management',
-  description: 'Specialized WCB rehabilitation supporting injured workers, employers, and insurers across Alberta.',
+  description: 'WCB rehabilitation supporting injured workers, employers, and insurers across Alberta.',
 };
 
 async function getServiceReviews(serviceTag: string) {
@@ -32,7 +34,7 @@ export default async function WCBRehabilitationPage() {
   const reviews = await getServiceReviews('wcb_rehabilitation');
   const serviceSchema = generateServiceSchema(
     'WCB Rehabilitation',
-    'Specialized WCB rehabilitation supporting injured workers, employers, and insurers across Alberta. Coordinated care for safe, sustainable return to work.'
+    'WCB rehabilitation supporting injured workers, employers, and insurers across Alberta. Coordinated care for safe, sustainable return to work.'
   );
 
   const procedureSchema = generateTherapeuticProcedureSchema(
@@ -96,6 +98,26 @@ export default async function WCBRehabilitationPage() {
           </div>
         </div>
       </div>
+      <div className="py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <MediaSplit image={image('assess-card')} ratio="4/3">
+            <p className="text-sm font-semibold uppercase tracking-wider text-aim-teal">First visit</p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-aim-navy md:text-4xl">
+              Assessed first, treated second
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-aim-slate/85">
+              The first appointment is longer than a follow-up: history, physical examination, and a
+              plan with goals you can state in your own words.
+            </p>
+            <ul className="mt-6 space-y-3 text-base leading-relaxed text-aim-slate/85">
+              <li className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-aim-teal" aria-hidden="true" />An explanation of what is driving the symptoms.</li>
+              <li className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-aim-teal" aria-hidden="true" />Treatment that day where appropriate, including exercise.</li>
+              <li className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-aim-teal" aria-hidden="true" />A home plan and reporting to WCB or your insurer when relevant.</li>
+            </ul>
+          </MediaSplit>
+        </div>
+      </div>
+
 
       <div className="py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">

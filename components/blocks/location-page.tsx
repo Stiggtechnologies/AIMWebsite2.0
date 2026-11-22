@@ -6,6 +6,8 @@ import { Section } from './section';
 import type { Location } from '@/lib/content/locations';
 import { getServiceBySlug } from '@/lib/content/services';
 import { JsonLd, localBusinessSchema } from '@/lib/seo';
+import { MediaSplit } from '@/components/media/site-image';
+import { image } from '@/lib/media';
 
 export function LocationPage({ location }: { location: Location }) {
   // Derived from 'open' rather than from 'coming-soon', deliberately. The old
@@ -149,10 +151,21 @@ export function LocationPage({ location }: { location: Location }) {
       </Section>
       )}
 
-      <Section heading="Meet the team">
-        <p className="text-aim-slate/80">
-          [Team bios coming soon. We're hiring — see our <Link className="font-semibold text-aim-teal underline-offset-2 hover:underline" href="/careers">careers page</Link>.]
-        </p>
+      <Section>
+        <MediaSplit image={image('assess-wide')} ratio="4/3">
+          <p className="text-sm font-semibold uppercase tracking-wider text-aim-teal">First visit</p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-aim-navy md:text-4xl">
+            What to expect when you arrive
+          </h2>
+          <ul className="mt-6 space-y-3 text-base leading-relaxed text-aim-slate/85">
+            <li className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-aim-teal" aria-hidden="true" />Bring your claim number, referral or imaging if you have them — not required to be seen.</li>
+            <li className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-aim-teal" aria-hidden="true" />Wear clothing you can move in; gowns and shorts are available if needed.</li>
+            <li className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-aim-teal" aria-hidden="true" />Plan for 45–60 minutes for an initial assessment.</li>
+          </ul>
+          <p className="mt-6 text-sm text-aim-slate/70">
+            Questions about accessibility, parking or what to bring? <Link href="/contact" className="font-semibold text-aim-teal underline-offset-2 hover:underline">Contact the clinic</Link>.
+          </p>
+        </MediaSplit>
       </Section>
 
       <CtaStrip

@@ -19,10 +19,10 @@ const intentPatterns: IntentPattern[] = [
     patterns: [/\b(book|appointment|schedule|see someone)\b/i],
     intent: 'booking',
     responses: {
-      injured_worker: "I can help you book that now. This program is commonly used for situations like yours. We offer direct WCB billing and specialized return-to-work programs, subject to approval.",
-      mva: "I can help you book that now. This program is commonly used for situations like yours. We handle direct insurance billing and specialize in motor vehicle accident recovery, subject to approval.",
-      athlete: "I can help you book that now. Many people in similar situations start with this program. Our therapists specialize in athletic injuries and performance optimization.",
-      senior: "I can help you with that. Our team would confirm eligibility and next steps. Let me connect you with our team who specialize in senior care.",
+      injured_worker: "I can help you book that now. This program is commonly used for situations like yours. We offer direct WCB billing and return-to-work programs, subject to approval.",
+      mva: "I can help you book that now. This program is commonly used for situations like yours. We handle direct insurance billing and focus on motor vehicle accident recovery, subject to approval.",
+      athlete: "I can help you book that now. Many people in similar situations start with this program. Our therapists have focused training in athletic injuries and performance optimization.",
+      senior: "I can help you with that. Our team would confirm eligibility and next steps. Let me connect you with our team who work with senior care.",
       employer: "I want to make sure this is handled properly. Let me connect you with our team who can discuss how we support workplace injury prevention programs.",
       insurer: "I want to make sure this is handled properly. Let me connect you with our team who can coordinate case management services and comprehensive reporting.",
       referral_partner: "Thank you for considering referring your patients to us. Let me connect you with our team to provide information about our referral process.",
@@ -39,7 +39,7 @@ const intentPatterns: IntentPattern[] = [
     patterns: [/\b(wcb|workers compensation|work injury|workplace injury)\b/i],
     intent: 'wcb_services',
     responses: {
-      default: "This program is commonly used for situations like yours. We specialize in WCB rehabilitation and return-to-work programs. Our services include direct WCB billing (subject to approval), functional capacity evaluations, and early intervention programs. Our team would confirm eligibility and next steps.",
+      default: "This program is commonly used for situations like yours. Our work focuses on WCB rehabilitation and return-to-work programs. Our services include direct WCB billing (subject to approval), functional capacity evaluations, and early intervention programs. Our team would confirm eligibility and next steps.",
     },
     actions: [
       { text: 'Learn About WCB Services', href: '/programs/wcb' },
@@ -72,7 +72,7 @@ const intentPatterns: IntentPattern[] = [
     patterns: [/\b(senior|elderly|fall|balance|mobility)\b/i],
     intent: 'senior_services',
     responses: {
-      default: "Our senior care program includes fall prevention, balance training, and mobility programs designed to help you maintain independence and quality of life. We specialize in age-related conditions and functional improvement.",
+      default: "Our senior care program includes fall prevention, balance training, and mobility programs designed to help you maintain independence and quality of life. Our work focuses on age-related conditions and functional improvement.",
     },
     actions: [
       { text: 'Senior Care Program', href: '/programs/senior' },

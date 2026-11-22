@@ -44,7 +44,7 @@ export default function WcbClaimsPage() {
       <Section heading="WCB-Approved Rehabilitation" subheading="Comprehensive treatment and coordination for workplace injuries">
         <Prose>
           <p>
-            Alberta Injury Management is an approved WCB provider with clinicians trained in occupational rehabilitation. We specialize in helping injured workers recover and return to meaningful employment.
+            Alberta Injury Management is an approved WCB provider with clinicians trained in occupational rehabilitation. We help injured workers recover and return to meaningful employment.
           </p>
           <p>
             Whether your injury is acute (recent) or chronic (long-standing), we develop individualized rehabilitation plans that focus on your functional recovery and work capacity.

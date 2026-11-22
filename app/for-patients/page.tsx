@@ -64,7 +64,7 @@ export default function PatientsPage() {
           <div className="rounded-xl bg-white p-6">
             <h3 className="mb-3 text-lg font-semibold text-aim-navy">WCB Claims</h3>
             <p className="mb-4 text-aim-slate/85">
-              We specialize in WorkSafeBC rehabilitation and return-to-work support. We coordinate directly with your employer and insurance provider.
+              We provide WorkSafeBC rehabilitation and return-to-work support. We coordinate directly with your employer and insurance provider.
             </p>
             <Link href="/for-patients/wcb-claims" className="text-aim-teal hover:underline font-semibold">
               WCB Information →

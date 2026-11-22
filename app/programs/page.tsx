@@ -6,7 +6,7 @@ import { LazyChatWidget } from '@/components/ai/lazy-chat-widget';
 
 export const metadata = {
   title: 'Programs | Alberta Injury Management',
-  description: 'Specialized rehabilitation programs for WCB, MVA, athletic injuries, seniors, and more. Expert care tailored to your recovery needs.',
+  description: 'Rehabilitation programs for WCB, MVA, athletic injuries, seniors, and more. Care tailored to your recovery needs.',
 };
 
 export default function ProgramsPage() {
@@ -16,7 +16,7 @@ export default function ProgramsPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl">
-              Specialized Rehabilitation Programs
+              Rehabilitation Programs
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-300">
               Evidence-based programs designed for your specific injury type and recovery goals.
@@ -39,7 +39,7 @@ export default function ProgramsPage() {
             />
             <PersonaCTACard
               title="MVA Recovery"
-              description="Expert care for motor vehicle accident injuries including whiplash, soft tissue injuries, and post-concussion syndrome."
+              description="Care for motor vehicle accident injuries including whiplash, soft tissue injuries, and post-concussion syndrome."
               icon={Car}
               ctaText="Learn More"
               ctaHref="/programs/mva"
@@ -69,7 +69,7 @@ export default function ProgramsPage() {
           <div className="mt-16 text-center">
             <h2 className="text-2xl font-bold text-aim-navy">Not Sure Which Program Is Right for You?</h2>
             <p className="mt-4 text-lg text-aim-slate">
-              Our team can help you find the best path to recovery.
+              Our team can help you find the right path to recovery.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button

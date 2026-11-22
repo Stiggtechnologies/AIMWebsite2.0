@@ -48,6 +48,25 @@ export default function AIDisclosurePage() {
           </section>
 
           <section className="mb-12">
+            <h2 className="text-2xl font-bold text-aim-navy mb-4">Photography and Illustrations</h2>
+            <p className="mb-4">
+              Some images on this website are produced or assisted with AI image generation, and
+              others are licensed stock photography. They are used to illustrate the kind of care
+              AIM provides.
+            </p>
+            <p className="mb-4">
+              They are not photographs of AIM patients, AIM clinicians, or AIM clinic premises, and
+              no person shown in them is a patient of this clinic. We do not publish photographs of
+              patients or client stories without express consent, and we do not publish
+              before-and-after images.
+            </p>
+            <p>
+              If you would like to see the actual clinic before your appointment, contact your
+              location and we will arrange it.
+            </p>
+          </section>
+
+          <section className="mb-12">
             <h2 className="text-2xl font-bold text-aim-navy mb-4">Human Oversight</h2>
             <p className="text-aim-slate mb-4">
               All AI interactions are subject to human oversight:

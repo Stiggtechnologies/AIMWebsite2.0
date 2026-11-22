@@ -22,11 +22,20 @@ export const metadata: Metadata = {
     siteName: 'Alberta Injury Management',
     title: 'Alberta Injury Management | Physiotherapy & Rehabilitation',
     description: 'Physiotherapy and injury management for work injuries, MVA recovery, and athletic performance in Edmonton.',
+    images: [
+      {
+        url: '/og/default.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'A physiotherapist supporting a patient through a shoulder assessment, with the Alberta Injury Management logo.',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Alberta Injury Management',
     description: 'Physiotherapy and injury management in Edmonton',
+    images: ['/og/default.jpg'],
   },
 };
 

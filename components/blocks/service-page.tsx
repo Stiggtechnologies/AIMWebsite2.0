@@ -6,6 +6,8 @@ import { Section, FeatureList } from './section';
 import type { Service } from '@/lib/content/services';
 import { locations } from '@/lib/content/locations';
 import { JsonLd, faqSchema } from '@/lib/seo';
+import { MediaSplit } from '@/components/media/site-image';
+import { image, serviceImage } from '@/lib/media';
 
 export function ServicePage({ service }: { service: Service }) {
   const locationsOffering = locations.filter((l) => l.services.includes(service.slug));
@@ -23,6 +25,8 @@ export function ServicePage({ service }: { service: Service }) {
         subheadline={service.positioning}
         primaryCta={{ label: bookingLabel, href: bookingHref }}
         secondaryCta={{ label: 'Find a Location', href: '/locations' }}
+        image={serviceImage(service.slug)}
+        highlights={['Direct billing for WCB and MVA claims', 'Most insurance accepted']}
       />
 
       <Section heading="How we help" subheading={`Conditions and concerns ${service.name.toLowerCase()} at AIM can help with.`}>
@@ -31,6 +35,24 @@ export function ServicePage({ service }: { service: Service }) {
 
       <Section muted heading="What treatment may include">
         <FeatureList items={service.treatmentMay} columns={2} />
+      </Section>
+
+      <Section>
+        <MediaSplit image={image('assess-card')} ratio="4/3" reverse>
+          <p className="text-sm font-semibold uppercase tracking-wider text-aim-teal">First visit</p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-aim-navy md:text-4xl">
+            How the first appointment runs
+          </h2>
+          <p className="mt-4 text-base leading-relaxed text-aim-slate/85">
+            We assess before we treat. The first appointment is longer than a follow-up because it
+            includes the history, the physical examination and the plan.
+          </p>
+          <ul className="mt-6 space-y-3 text-base leading-relaxed text-aim-slate/85">
+            <li className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-aim-teal" aria-hidden="true" />Assessment and explanation of what is driving the symptoms.</li>
+            <li className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-aim-teal" aria-hidden="true" />Treatment that day where it is appropriate, including exercise.</li>
+            <li className="flex gap-3"><span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-aim-teal" aria-hidden="true" />A home plan and a review date, with reporting to WCB or your insurer when relevant.</li>
+          </ul>
+        </MediaSplit>
       </Section>
 
       <Section heading="Who this is for">
