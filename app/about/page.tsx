@@ -57,6 +57,21 @@ export default async function AboutPage() {
         </div>
       </div>
 
+      <section id="aim-physiotherapists" aria-labelledby="aim-physiotherapists-heading" className="bg-white py-12 sm:py-16">
+        <div className="mx-auto max-w-5xl px-6 lg:px-8">
+          <h2 id="aim-physiotherapists-heading" className="text-3xl font-bold text-aim-navy">AIM Physiotherapists</h2>
+          <p className="mt-3 text-aim-slate">Contact AIM to confirm clinician availability and appointment options.</p>
+          <ul className="mt-6 grid gap-4 sm:grid-cols-2">
+            <li className="rounded-lg border border-slate-200 p-5">
+              <Link href="#anand-jim-john-sylem" className="font-semibold text-aim-navy underline underline-offset-4">Anand Jim John Sylem, Physiotherapist</Link>
+            </li>
+            <li className="rounded-lg border border-slate-200 p-5 font-semibold text-aim-navy">Gunjan Yashvantbhai Soni, Physiotherapist</li>
+            <li className="rounded-lg border border-slate-200 p-5 font-semibold text-aim-navy">Hercules Grant, Physiotherapist</li>
+            <li className="rounded-lg border border-slate-200 p-5 font-semibold text-aim-navy">Kimoya Schannae Goslin, Physiotherapist</li>
+          </ul>
+        </div>
+      </section>
+
       <section id="anand-jim-john-sylem" aria-labelledby="persistent-pain-clinician" className="bg-slate-50 py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-6 lg:px-8">
           <p className="text-sm font-semibold uppercase tracking-wide text-aim-slate">Clinician profile</p>
