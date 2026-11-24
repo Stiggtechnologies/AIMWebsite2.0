@@ -129,6 +129,11 @@ export function Header() {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
+                <Link href="/services/cognitive-functional-therapy" className="w-full cursor-pointer">
+                  Cognitive Functional Therapy (CFT)
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link href="/services/mva-rehabilitation" className="w-full cursor-pointer">
                   MVA Rehabilitation
                 </Link>
@@ -365,6 +370,13 @@ export function Header() {
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           Chronic Pain Rehabilitation
+                        </Link>
+                        <Link
+                          href="/services/cognitive-functional-therapy"
+                          className="block rounded-lg px-3 py-2 text-sm leading-6 text-gray-700 hover:bg-gray-50"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          Cognitive Functional Therapy (CFT)
                         </Link>
                         <Link
                           href="/services/mva-rehabilitation"
